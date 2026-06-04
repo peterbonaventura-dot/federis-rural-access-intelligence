@@ -1,0 +1,69 @@
+{
+  "name": "CountyHealthBurden",
+  "type": "object",
+  "properties": {
+    "county_id": {
+      "type": "string",
+      "description": "Reference to County entity"
+    },
+    "diabetes_rate": {
+      "type": "number"
+    },
+    "hypertension_rate": {
+      "type": "number"
+    },
+    "heart_disease_rate": {
+      "type": "number"
+    },
+    "stroke_rate": {
+      "type": "number"
+    },
+    "copd_rate": {
+      "type": "number"
+    },
+    "asthma_rate": {
+      "type": "number"
+    },
+    "obesity_rate": {
+      "type": "number"
+    },
+    "depression_rate": {
+      "type": "number"
+    },
+    "serious_mental_illness_estimate": {
+      "type": "number"
+    },
+    "substance_use_disorder_estimate": {
+      "type": "number"
+    },
+    "opioid_overdose_rate": {
+      "type": "number"
+    },
+    "alzheimers_dementia_estimate": {
+      "type": "number"
+    },
+    "fall_risk_older_adult_estimate": {
+      "type": "number"
+    },
+    "avoidable_er_use_rate": {
+      "type": "number"
+    },
+    "preventable_hospitalization_rate": {
+      "type": "number"
+    },
+    "poor_physical_health_days": {
+      "type": "number",
+      "description": "Avg days per month"
+    },
+    "poor_mental_health_days": {
+      "type": "number",
+      "description": "Avg days per month"
+    },
+    "life_expectancy": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "county_id"
+  ]
+}

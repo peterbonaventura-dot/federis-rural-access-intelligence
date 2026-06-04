@@ -1,0 +1,90 @@
+{
+  "name": "CountyNeedsProfile",
+  "type": "object",
+  "properties": {
+    "county_id": {
+      "type": "string"
+    },
+    "reporting_period_start": {
+      "type": "string",
+      "format": "date"
+    },
+    "reporting_period_end": {
+      "type": "string",
+      "format": "date"
+    },
+    "county_snapshot_summary": {
+      "type": "string"
+    },
+    "population_need_summary": {
+      "type": "string"
+    },
+    "health_burden_summary": {
+      "type": "string"
+    },
+    "provider_capacity_summary": {
+      "type": "string"
+    },
+    "hcbs_personal_care_access_summary": {
+      "type": "string"
+    },
+    "workforce_capacity_summary": {
+      "type": "string"
+    },
+    "hospital_discharge_risk_summary": {
+      "type": "string"
+    },
+    "transportation_burden_summary": {
+      "type": "string"
+    },
+    "benefits_access_summary": {
+      "type": "string"
+    },
+    "telehealth_readiness_summary": {
+      "type": "string"
+    },
+    "behavioral_health_access_summary": {
+      "type": "string"
+    },
+    "pharmacy_access_summary": {
+      "type": "string"
+    },
+    "care_desert_summary": {
+      "type": "string"
+    },
+    "priority_service_recommendations": {
+      "type": "string"
+    },
+    "top_5_needs": {
+      "type": "string"
+    },
+    "top_5_service_gaps": {
+      "type": "string"
+    },
+    "recommended_interventions": {
+      "type": "string"
+    },
+    "generated_by": {
+      "type": "string",
+      "enum": [
+        "ai",
+        "manual",
+        "hybrid"
+      ],
+      "default": "ai"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "in_review",
+        "approved",
+        "published"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "county_id"
+  ]
+}

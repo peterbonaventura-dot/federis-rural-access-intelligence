@@ -1,0 +1,78 @@
+{
+  "name": "WorkforceProfile",
+  "type": "object",
+  "properties": {
+    "county_id": {
+      "type": "string",
+      "description": "Reference to County entity"
+    },
+    "working_age_population": {
+      "type": "number"
+    },
+    "unemployment_rate": {
+      "type": "number"
+    },
+    "labor_force_participation_rate": {
+      "type": "number"
+    },
+    "caregiver_applicant_count": {
+      "type": "number",
+      "default": 0
+    },
+    "active_caregiver_count": {
+      "type": "number",
+      "default": 0
+    },
+    "caregiver_turnover_rate": {
+      "type": "number",
+      "description": "% annual turnover"
+    },
+    "average_caregiver_wage": {
+      "type": "number",
+      "description": "Hourly wage"
+    },
+    "wage_benchmark_gap": {
+      "type": "number",
+      "description": "Gap vs state median direct care wage"
+    },
+    "number_of_cna_training_programs": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_hha_training_programs": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_dsp_training_programs": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_community_colleges": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_cte_programs": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_workforce_boards": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_job_centers": {
+      "type": "number",
+      "default": 0
+    },
+    "recruitment_opportunity_score": {
+      "type": "number",
+      "description": "0-100, higher = more opportunity"
+    },
+    "workforce_shortage_score": {
+      "type": "number",
+      "description": "0-100, higher = more shortage"
+    }
+  },
+  "required": [
+    "county_id"
+  ]
+}

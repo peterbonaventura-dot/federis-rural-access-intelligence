@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Globe, MapPin, Building, Users, BarChart3,
   Map, Database, FileText, HardDrive, Settings, ChevronLeft,
-  ChevronRight, Activity, Shield
+  ChevronRight, Shield, Wifi, Briefcase, Hospital, ShieldCheck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +15,10 @@ const NAV_ITEMS = [
   { path: '/research-cohort', label: 'Research Cohort', icon: Users },
   { path: '/risk-rankings', label: 'Risk Rankings', icon: BarChart3 },
   { path: '/resource-mapping', label: 'Resource Mapping', icon: Map },
+  { path: '/telehealth-access', label: 'Telehealth Access', icon: Wifi },
+  { path: '/workforce-capacity', label: 'Workforce Capacity', icon: Briefcase },
+  { path: '/hospital-discharge-risk', label: 'Discharge Risk', icon: Hospital },
+  { path: '/benefits-access', label: 'Benefits Access', icon: ShieldCheck },
   { path: '/operational-data', label: 'Operational Data', icon: Database },
   { path: '/research-briefs', label: 'Research Briefs', icon: FileText },
   { path: '/data-sources', label: 'Data Sources', icon: HardDrive },
@@ -45,7 +49,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
       {/* Nav */}
       <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
         {NAV_ITEMS.map(({ path, label, icon: Icon }) => {
-          const active = location.pathname === path || 
+          const active = location.pathname === path ||
             (path !== '/' && location.pathname.startsWith(path));
           return (
             <Link

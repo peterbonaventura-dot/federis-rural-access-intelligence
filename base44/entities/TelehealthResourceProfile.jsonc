@@ -1,0 +1,89 @@
+{
+  "name": "TelehealthResourceProfile",
+  "type": "object",
+  "properties": {
+    "county_id": {
+      "type": "string",
+      "description": "Reference to County entity"
+    },
+    "broadband_availability_rate": {
+      "type": "number",
+      "description": "% of county with broadband access"
+    },
+    "household_internet_access_rate": {
+      "type": "number",
+      "description": "% of households with internet"
+    },
+    "household_no_internet_rate": {
+      "type": "number",
+      "description": "% of households without internet"
+    },
+    "cell_coverage_reliability_score": {
+      "type": "number",
+      "description": "Cell coverage score 0-100"
+    },
+    "estimated_digital_literacy_need_rate": {
+      "type": "number"
+    },
+    "older_adult_digital_support_need_rate": {
+      "type": "number"
+    },
+    "number_of_libraries_with_public_internet": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_community_centers_with_internet": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_fqhcs_offering_telehealth": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_rhcs_offering_telehealth": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_primary_care_telehealth_providers": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_behavioral_health_telehealth_providers": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_substance_use_telehealth_providers": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_remote_patient_monitoring_programs": {
+      "type": "number",
+      "default": 0
+    },
+    "medicaid_telehealth_coverage_notes": {
+      "type": "string"
+    },
+    "medicare_telehealth_access_notes": {
+      "type": "string"
+    },
+    "telehealth_can_reduce_transportation_burden_flag": {
+      "type": "boolean",
+      "default": false
+    },
+    "telehealth_readiness_score": {
+      "type": "number",
+      "description": "0-100, higher = more ready"
+    },
+    "telehealth_gap_score": {
+      "type": "number",
+      "description": "0-100, higher = greater gap"
+    },
+    "telehealth_priority_county_flag": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "county_id"
+  ]
+}

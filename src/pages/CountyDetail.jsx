@@ -69,9 +69,16 @@ export default function CountyDetail() {
         title={`${county.county_name}, ${county.state_abbreviation}`}
         description={`FIPS ${county.fips_code} • ${county.state}`}
         actions={
-          <Link to="/county-profiles">
-            <Button variant="outline" size="sm"><ArrowLeft className="w-4 h-4 mr-1" /> All Counties</Button>
-          </Link>
+          <div className="flex gap-2">
+            <Link to="/county-profiles">
+              <Button variant="outline" size="sm"><ArrowLeft className="w-4 h-4 mr-1" /> All Counties</Button>
+            </Link>
+            <Link to={`/county-profiles/${countyId}/needs-profile`}>
+              <Button size="sm" variant="outline">
+                <FileCheck className="w-4 h-4 mr-1" /> Needs Profile
+              </Button>
+            </Link>
+          </div>
         }
       />
 

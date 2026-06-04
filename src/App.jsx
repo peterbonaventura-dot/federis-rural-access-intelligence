@@ -25,6 +25,11 @@ import OperationalData from '@/pages/OperationalData';
 import ResearchBriefs from '@/pages/ResearchBriefs';
 import DataSources from '@/pages/DataSources';
 import AppSettings from '@/pages/AppSettings';
+import TelehealthAccess from '@/pages/TelehealthAccess';
+import WorkforceCapacity from '@/pages/WorkforceCapacity';
+import HospitalDischargeRisk from '@/pages/HospitalDischargeRisk';
+import BenefitsAccess from '@/pages/BenefitsAccess';
+import CountyNeedsProfilePage from '@/pages/CountyNeedsProfilePage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -70,6 +75,11 @@ const AuthenticatedApp = () => {
           <Route path="/research-briefs" element={<ResearchBriefs />} />
           <Route path="/data-sources" element={<DataSources />} />
           <Route path="/settings" element={<AppSettings />} />
+          <Route path="/telehealth-access" element={<TelehealthAccess />} />
+          <Route path="/workforce-capacity" element={<WorkforceCapacity />} />
+          <Route path="/hospital-discharge-risk" element={<HospitalDischargeRisk />} />
+          <Route path="/benefits-access" element={<BenefitsAccess />} />
+          <Route path="/county-profiles/:id/needs-profile" element={<CountyNeedsProfilePage />} />
         </Route>
       </Route>
 
