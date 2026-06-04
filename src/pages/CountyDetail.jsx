@@ -193,6 +193,30 @@ export default function CountyDetail() {
           </Card>
         )}
 
+        {/* Benefits Enrollment */}
+        <Card className="p-6">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Benefits Enrollment</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-sm">
+            {[
+              { label: 'Medicare', value: county.medicare_enrollees, icon: '🏥' },
+              { label: 'Medicaid', value: county.medicaid_enrollees, icon: '🩺' },
+              { label: 'Dual-Eligible', value: county.dual_eligible_enrollees, icon: '⚕️' },
+              { label: 'Social Security', value: county.social_security_recipients, icon: '🛡️' },
+              { label: 'SSI', value: county.ssi_recipients, icon: '💰' },
+              { label: 'SNAP', value: county.snap_recipients, icon: '🥗' },
+            ].map(item => (
+              <div key={item.label} className="bg-muted/40 rounded-lg p-3">
+                <p className="text-lg mb-1">{item.icon}</p>
+                <p className="text-xs text-muted-foreground">{item.label}</p>
+                <p className="font-semibold text-base">{item.value != null ? item.value.toLocaleString() : '—'}</p>
+                {item.value != null && county.population_total ? (
+                  <p className="text-xs text-muted-foreground mt-0.5">{((item.value / county.population_total) * 100).toFixed(1)}% of pop.</p>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </Card>
+
         {/* Facilities & Businesses */}
         <FacilityList countyId={countyId} countyState={county.state_abbreviation} />
 

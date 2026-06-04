@@ -84,6 +84,30 @@
     },
     "longitude": {
       "type": "number"
+    },
+    "medicare_enrollees": {
+      "type": "number",
+      "description": "Number of Medicare enrollees"
+    },
+    "medicaid_enrollees": {
+      "type": "number",
+      "description": "Number of Medicaid enrollees"
+    },
+    "dual_eligible_enrollees": {
+      "type": "number",
+      "description": "Number of individuals enrolled in both Medicare and Medicaid"
+    },
+    "social_security_recipients": {
+      "type": "number",
+      "description": "Number of Social Security (SSA) benefit recipients"
+    },
+    "ssi_recipients": {
+      "type": "number",
+      "description": "Number of Supplemental Security Income (SSI) recipients"
+    },
+    "snap_recipients": {
+      "type": "number",
+      "description": "Number of SNAP (food stamps) recipients"
     }
   },
   "required": [
