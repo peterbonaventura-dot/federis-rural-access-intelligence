@@ -5,6 +5,7 @@ import PageHeader from '@/components/shared/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import CmsImportPanel from '@/components/datasources/CmsImportPanel';
 import CmsEnrollmentImportPanel from '@/components/datasources/CmsEnrollmentImportPanel';
+import HudHousingImportPanel from '@/components/datasources/HudHousingImportPanel';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -60,6 +61,7 @@ export default function DataSources() {
         </div>
         <CmsImportPanel />
         <CmsEnrollmentImportPanel />
+        <HudHousingImportPanel />
         <Card>
           <CardContent className="p-0">
             <Table>
