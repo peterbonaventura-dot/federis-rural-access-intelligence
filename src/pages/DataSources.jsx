@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import CmsImportPanel from '@/components/datasources/CmsImportPanel';
 import CmsEnrollmentImportPanel from '@/components/datasources/CmsEnrollmentImportPanel';
 import HudHousingImportPanel from '@/components/datasources/HudHousingImportPanel';
+import AutoFacilityImportPanel from '@/components/datasources/AutoFacilityImportPanel';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -59,6 +60,7 @@ export default function DataSources() {
             <span className="text-green-700 ml-2">— Medicare, Medicaid, dual-eligible, and SSI counts are updated for all counties with a FIPS code. Results are logged in the Audit Log.</span>
           </div>
         </div>
+        <AutoFacilityImportPanel />
         <CmsImportPanel />
         <CmsEnrollmentImportPanel />
         <HudHousingImportPanel />
