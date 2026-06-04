@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import { getRiskColor, getRiskLevel } from '@/lib/scoringEngine';
 import { Input } from '@/components/ui/input';
-import { Search, Layers } from 'lucide-react';
+import { Search, Layers, Shield } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 
 const CLUSTER_TYPES = new Set(['hospital', 'critical_access_hospital', 'rural_health_clinic', 'fqhc']);
@@ -86,6 +86,7 @@ export default function NationalMap() {
   const [facilityTypeFilter, setFacilityTypeFilter] = useState('all');
   const [showFacilities, setShowFacilities] = useState(true);
   const [clusterMode, setClusterMode] = useState(false);
+  const [showVeteranLayer, setShowVeteranLayer] = useState(false);
 
   const { data: counties = [] } = useQuery({
     queryKey: ['counties'],
@@ -145,6 +146,15 @@ export default function NationalMap() {
   }, [allFacilities, filteredCountyIds]);
 
   const clusters = useMemo(() => clusterFacilities(clusterFacilitiesFiltered), [clusterFacilitiesFiltered]);
+
+  // Veteran density: pct of population that are veterans, normalized for coloring
+  const veteranDensityColor = (pct) => {
+    if (pct >= 0.12) return '#7c2d12';  // very high >12%
+    if (pct >= 0.09) return '#c2410c';  // high 9-12%
+    if (pct >= 0.06) return '#ea580c';  // moderate 6-9%
+    if (pct >= 0.03) return '#fb923c';  // low 3-6%
+    return '#fed7aa';                   // minimal <3%
+  };
 
   return (
     <div>
@@ -206,7 +216,14 @@ export default function NationalMap() {
             className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded border font-medium transition-colors ${clusterMode ? 'bg-green-600 text-white border-green-600' : 'bg-background text-muted-foreground border-border'}`}
           >
             <Layers className="w-3.5 h-3.5" />
-            {clusterMode ? 'Cluster View' : 'Cluster View'}
+            Cluster View
+          </button>
+          <button
+            onClick={() => setShowVeteranLayer(v => !v)}
+            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded border font-medium transition-colors ${showVeteranLayer ? 'bg-orange-600 text-white border-orange-600' : 'bg-background text-muted-foreground border-border'}`}
+          >
+            <Shield className="w-3.5 h-3.5" />
+            Veteran Density
           </button>
         </div>
 
@@ -245,6 +262,38 @@ export default function NationalMap() {
                           <p>Population: {county.population_total?.toLocaleString()}</p>
                           {score?.care_desert_flag && <p className="text-red-600 font-semibold">⚠ Care Desert</p>}
                           <Link to={`/county-profiles/${county.id}`} className="text-blue-600 underline text-xs">View Profile →</Link>
+                        </div>
+                      </Popup>
+                    </CircleMarker>
+                  );
+                })}
+
+                {/* Veteran population density layer */}
+                {showVeteranLayer && filtered.map(county => {
+                  if (!county.veterans_population || !county.population_total) return null;
+                  const pct = county.veterans_population / county.population_total;
+                  const color = veteranDensityColor(pct);
+                  const radius = Math.max(5, Math.min(28, county.veterans_population / 500));
+                  return (
+                    <CircleMarker
+                      key={`vet-${county.id}`}
+                      center={[county.latitude, county.longitude]}
+                      radius={radius}
+                      fillColor={color}
+                      fillOpacity={0.5}
+                      stroke={true}
+                      weight={1.5}
+                      color={color}
+                    >
+                      <Popup>
+                        <div className="text-sm space-y-0.5">
+                          <p className="font-bold">🎖 {county.county_name}, {county.state_abbreviation}</p>
+                          <p>Veterans: <strong>{county.veterans_population?.toLocaleString()}</strong></p>
+                          <p>Vet Share: <strong>{(pct * 100).toFixed(1)}% of population</strong></p>
+                          {county.veterans_65_plus != null && <p className="text-xs text-gray-600">65+: {county.veterans_65_plus?.toLocaleString()}</p>}
+                          {county.veterans_with_disability != null && <p className="text-xs text-gray-600">With disability: {county.veterans_with_disability?.toLocaleString()}</p>}
+                          {county.nearest_va_facility_miles != null && <p className="text-xs text-gray-600">Nearest VA: {county.nearest_va_facility_miles} mi</p>}
+                          <Link to={`/county-profiles/${county.id}`} className="text-blue-600 underline text-xs block mt-1">View Profile →</Link>
                         </div>
                       </Popup>
                     </CircleMarker>
@@ -408,6 +457,39 @@ export default function NationalMap() {
                       <span className="font-medium ml-1">{count}</span>
                     </div>
                   ))}
+                </div>
+              </Card>
+            )}
+
+            {showVeteranLayer && (
+              <Card className="p-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-orange-600" /> Veteran Density
+                </h3>
+                <div className="space-y-2">
+                  {[
+                    { label: 'Very High (>12% of pop)', color: '#7c2d12' },
+                    { label: 'High (9–12%)', color: '#c2410c' },
+                    { label: 'Moderate (6–9%)', color: '#ea580c' },
+                    { label: 'Low (3–6%)', color: '#fb923c' },
+                    { label: 'Minimal (<3%)', color: '#fed7aa' },
+                  ].map(item => (
+                    <div key={item.label} className="flex items-center gap-2 text-xs">
+                      <div className="w-3 h-3 rounded-full opacity-80" style={{ backgroundColor: item.color }} />
+                      <span>{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2 pt-2 border-t">Circle size = absolute veteran count. Color = % of county population. Overlaps with facility clusters reveal service gaps.</p>
+                <div className="mt-2 space-y-1 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Counties with vet data</span>
+                    <span className="font-medium">{filtered.filter(c => c.veterans_population).length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Total veterans shown</span>
+                    <span className="font-medium">{filtered.reduce((s, c) => s + (c.veterans_population || 0), 0).toLocaleString()}</span>
+                  </div>
                 </div>
               </Card>
             )}
