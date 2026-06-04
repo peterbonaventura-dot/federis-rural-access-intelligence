@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/shared/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import CmsImportPanel from '@/components/datasources/CmsImportPanel';
+import CmsEnrollmentImportPanel from '@/components/datasources/CmsEnrollmentImportPanel';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,6 +51,7 @@ export default function DataSources() {
       />
       <div className="p-8 space-y-6">
         <CmsImportPanel />
+        <CmsEnrollmentImportPanel />
         <Card>
           <CardContent className="p-0">
             <Table>
