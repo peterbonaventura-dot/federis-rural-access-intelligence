@@ -10,8 +10,36 @@ import { Badge } from '@/components/ui/badge';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import { getRiskColor, getRiskLevel } from '@/lib/scoringEngine';
 import { Input } from '@/components/ui/input';
-import { Search, Filter } from 'lucide-react';
+import { Search, Layers } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
+
+const CLUSTER_TYPES = new Set(['hospital', 'critical_access_hospital', 'rural_health_clinic', 'fqhc']);
+
+// Grid-based clustering: bucket facilities into lat/lng grid cells
+function clusterFacilities(facilities, gridSize = 1.5) {
+  const buckets = {};
+  facilities.forEach(f => {
+    const row = Math.floor(f.latitude / gridSize);
+    const col = Math.floor(f.longitude / gridSize);
+    const key = `${row}_${col}`;
+    if (!buckets[key]) buckets[key] = [];
+    buckets[key].push(f);
+  });
+  return Object.values(buckets).map(group => {
+    const lat = group.reduce((s, f) => s + f.latitude, 0) / group.length;
+    const lng = group.reduce((s, f) => s + f.longitude, 0) / group.length;
+    const hospitals = group.filter(f => f.facility_type === 'hospital' || f.facility_type === 'critical_access_hospital').length;
+    const clinics = group.filter(f => f.facility_type === 'rural_health_clinic' || f.facility_type === 'fqhc').length;
+    return { lat, lng, count: group.length, hospitals, clinics, facilities: group };
+  });
+}
+
+function clusterColor(count) {
+  if (count >= 10) return '#16a34a';
+  if (count >= 5) return '#2563eb';
+  if (count >= 2) return '#d97706';
+  return '#6b7280';
+}
 
 const FACILITY_COLORS = {
   hospital: '#dc2626',
@@ -57,6 +85,7 @@ export default function NationalMap() {
   const [search, setSearch] = useState('');
   const [facilityTypeFilter, setFacilityTypeFilter] = useState('all');
   const [showFacilities, setShowFacilities] = useState(true);
+  const [clusterMode, setClusterMode] = useState(false);
 
   const { data: counties = [] } = useQuery({
     queryKey: ['counties'],
@@ -103,6 +132,19 @@ export default function NationalMap() {
       return true;
     });
   }, [allFacilities, filteredCountyIds, facilityTypeFilter]);
+
+  // Cluster-eligible facilities (hospitals + clinics only)
+  const clusterFacilitiesFiltered = useMemo(() => {
+    return allFacilities.filter(f => {
+      if (!f.latitude || !f.longitude) return false;
+      if (!filteredCountyIds.has(f.county_id)) return false;
+      if (!CLUSTER_TYPES.has(f.facility_type)) return false;
+      if (!f.is_active) return false;
+      return true;
+    });
+  }, [allFacilities, filteredCountyIds]);
+
+  const clusters = useMemo(() => clusterFacilities(clusterFacilitiesFiltered), [clusterFacilitiesFiltered]);
 
   return (
     <div>
@@ -159,6 +201,13 @@ export default function NationalMap() {
           >
             {showFacilities ? '● Facilities On' : '○ Facilities Off'}
           </button>
+          <button
+            onClick={() => setClusterMode(v => !v)}
+            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded border font-medium transition-colors ${clusterMode ? 'bg-green-600 text-white border-green-600' : 'bg-background text-muted-foreground border-border'}`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            {clusterMode ? 'Cluster View' : 'Cluster View'}
+          </button>
         </div>
 
         {/* Map + Legend */}
@@ -202,8 +251,43 @@ export default function NationalMap() {
                   );
                 })}
 
+                {/* Cluster hotspot markers */}
+                {clusterMode && clusters.map((cluster, i) => {
+                  const radius = Math.max(14, Math.min(40, cluster.count * 4));
+                  const color = clusterColor(cluster.count);
+                  return (
+                    <CircleMarker
+                      key={`cluster-${i}`}
+                      center={[cluster.lat, cluster.lng]}
+                      radius={radius}
+                      fillColor={color}
+                      fillOpacity={0.55}
+                      stroke={true}
+                      weight={2}
+                      color={color}
+                    >
+                      <Popup>
+                        <div className="text-sm space-y-1">
+                          <p className="font-bold">Care Density Hotspot</p>
+                          <p className="text-xs text-gray-600">{cluster.count} facilities in this area</p>
+                          <div className="flex gap-2 flex-wrap mt-1">
+                            {cluster.hospitals > 0 && <span className="text-xs bg-red-100 text-red-700 px-1.5 rounded">🏥 {cluster.hospitals} Hospital{cluster.hospitals > 1 ? 's' : ''}</span>}
+                            {cluster.clinics > 0 && <span className="text-xs bg-blue-100 text-blue-700 px-1.5 rounded">🩺 {cluster.clinics} Clinic{cluster.clinics > 1 ? 's' : ''}</span>}
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">Facilities:</p>
+                          <ul className="text-xs text-gray-700 max-h-32 overflow-y-auto space-y-0.5">
+                            {cluster.facilities.map(f => (
+                              <li key={f.id}>• {f.facility_name} <span className="text-gray-400">({FACILITY_LABELS[f.facility_type] || f.facility_type})</span></li>
+                            ))}
+                          </ul>
+                        </div>
+                      </Popup>
+                    </CircleMarker>
+                  );
+                })}
+
                 {/* Individual facility markers */}
-                {showFacilities && filteredFacilities.map(f => {
+                {showFacilities && !clusterMode && filteredFacilities.map(f => {
                   const color = FACILITY_COLORS[f.facility_type] || FACILITY_COLORS.other;
                   const county = countyMap[f.county_id];
                   const address = [f.address_street, f.address_city, f.address_state, f.address_zip].filter(Boolean).join(', ');
@@ -282,7 +366,31 @@ export default function NationalMap() {
               </div>
             </Card>
 
-            {showFacilities && filteredFacilities.length > 0 && (
+            {clusterMode && (
+              <Card className="p-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Cluster Density</h3>
+                <div className="space-y-2">
+                  {[
+                    { label: '10+ facilities', color: '#16a34a' },
+                    { label: '5–9 facilities', color: '#2563eb' },
+                    { label: '2–4 facilities', color: '#d97706' },
+                    { label: '1 facility', color: '#6b7280' },
+                  ].map(item => (
+                    <div key={item.label} className="flex items-center gap-2 text-xs">
+                      <div className="w-3 h-3 rounded-full opacity-70" style={{ backgroundColor: item.color }} />
+                      <span>{item.label}</span>
+                    </div>
+                  ))}
+                  <p className="text-xs text-muted-foreground mt-2 pt-2 border-t">Showing hospitals, critical access hospitals, rural health clinics, and FQHCs. Circle size = density.</p>
+                </div>
+                <div className="mt-3 pt-3 border-t space-y-1 text-xs">
+                  <div className="flex justify-between"><span className="text-muted-foreground">Hotspot clusters</span><span className="font-medium">{clusters.length}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Facilities clustered</span><span className="font-medium">{clusterFacilitiesFiltered.length}</span></div>
+                </div>
+              </Card>
+            )}
+
+            {showFacilities && !clusterMode && filteredFacilities.length > 0 && (
               <Card className="p-4">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Facility Types</h3>
                 <div className="space-y-1.5 max-h-48 overflow-y-auto">
