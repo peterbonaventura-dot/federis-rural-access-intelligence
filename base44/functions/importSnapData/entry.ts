@@ -27,6 +27,8 @@ async function fetchSnapForState(stateCode, countyCode) {
   url.searchParams.set('get', `${SNAP_PERSONS_VAR},NAME`);
   url.searchParams.set('for', `county:${countyCode}`);
   url.searchParams.set('in', `state:${stateCode}`);
+  const apiKey = Deno.env.get('CENSUS_API_KEY');
+  if (apiKey) url.searchParams.set('key', apiKey);
 
   const res = await fetch(url.toString());
   if (!res.ok) {
