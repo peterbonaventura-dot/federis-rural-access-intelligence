@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/shared/PageHeader';
 import { Card, CardContent } from '@/components/ui/card';
+import CmsImportPanel from '@/components/datasources/CmsImportPanel';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,7 +48,8 @@ export default function DataSources() {
         description="Track public and internal data sources used in the research infrastructure."
         actions={<Button size="sm" onClick={() => setShowAdd(true)}><Plus className="w-4 h-4 mr-1" /> Add Source</Button>}
       />
-      <div className="p-8">
+      <div className="p-8 space-y-6">
+        <CmsImportPanel />
         <Card>
           <CardContent className="p-0">
             <Table>
