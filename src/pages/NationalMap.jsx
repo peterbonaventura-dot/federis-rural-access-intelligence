@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import { getRiskColor, getRiskLevel } from '@/lib/scoringEngine';
 import { Input } from '@/components/ui/input';
-import { Search, Layers, Shield } from 'lucide-react';
+import { Search, Layers, Shield, AlertTriangle } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 
 const CLUSTER_TYPES = new Set(['hospital', 'critical_access_hospital', 'rural_health_clinic', 'fqhc']);
@@ -86,7 +86,8 @@ export default function NationalMap() {
   const [facilityTypeFilter, setFacilityTypeFilter] = useState('all');
   const [showFacilities, setShowFacilities] = useState(true);
   const [clusterMode, setClusterMode] = useState(false);
-  const [showVeteranLayer, setShowVeteranLayer] = useState(false);
+  const [showVeteranLayer, setShowVeteranLayer] = useState(true);
+  const [showCoverageGaps, setShowCoverageGaps] = useState(true);
 
   const { data: counties = [] } = useQuery({
     queryKey: ['counties'],
@@ -121,29 +122,53 @@ export default function NationalMap() {
     });
   }, [counties, stateFilter, cohortFilter, search]);
 
-  // Filter facilities to counties shown on map + type filter, only those with coordinates
   const filteredCountyIds = useMemo(() => new Set(filtered.map(c => c.id)), [filtered]);
 
+  // Enrich facilities with county coords as fallback when facility has no own lat/lng
+  const facilitiesWithCoords = useMemo(() => {
+    return allFacilities
+      .filter(f => filteredCountyIds.has(f.county_id) && f.is_active)
+      .map(f => {
+        if (f.latitude && f.longitude) return f;
+        const county = countyMap[f.county_id];
+        if (county?.latitude && county?.longitude) {
+          return { ...f, latitude: county.latitude, longitude: county.longitude, _usedCountyCoords: true };
+        }
+        return null;
+      })
+      .filter(Boolean);
+  }, [allFacilities, filteredCountyIds, countyMap]);
+
   const filteredFacilities = useMemo(() => {
-    return allFacilities.filter(f => {
-      if (!f.latitude || !f.longitude) return false;
-      if (!filteredCountyIds.has(f.county_id)) return false;
+    return facilitiesWithCoords.filter(f => {
       if (facilityTypeFilter !== 'all' && f.facility_type !== facilityTypeFilter) return false;
-      if (!f.is_active) return false;
       return true;
     });
-  }, [allFacilities, filteredCountyIds, facilityTypeFilter]);
+  }, [facilitiesWithCoords, facilityTypeFilter]);
 
   // Cluster-eligible facilities (hospitals + clinics only)
   const clusterFacilitiesFiltered = useMemo(() => {
-    return allFacilities.filter(f => {
-      if (!f.latitude || !f.longitude) return false;
-      if (!filteredCountyIds.has(f.county_id)) return false;
-      if (!CLUSTER_TYPES.has(f.facility_type)) return false;
-      if (!f.is_active) return false;
-      return true;
+    return facilitiesWithCoords.filter(f => CLUSTER_TYPES.has(f.facility_type));
+  }, [facilitiesWithCoords]);
+
+  // Coverage gap: counties with high veteran density but few health facilities
+  const coverageGaps = useMemo(() => {
+    const facilityCountByCounty = {};
+    facilitiesWithCoords.forEach(f => {
+      facilityCountByCounty[f.county_id] = (facilityCountByCounty[f.county_id] || 0) + 1;
     });
-  }, [allFacilities, filteredCountyIds]);
+    return filtered
+      .filter(c => c.veterans_population && c.population_total)
+      .map(c => ({
+        ...c,
+        vetPct: c.veterans_population / c.population_total,
+        facilityCount: facilityCountByCounty[c.id] || 0,
+        riskScore: scoreMap[c.id]?.overall_rural_access_risk_score || 0,
+      }))
+      .filter(c => c.vetPct >= 0.05 && c.facilityCount < 5)
+      .sort((a, b) => b.vetPct - a.vetPct)
+      .slice(0, 8);
+  }, [filtered, facilitiesWithCoords, scoreMap]);
 
   const clusters = useMemo(() => clusterFacilities(clusterFacilitiesFiltered), [clusterFacilitiesFiltered]);
 
@@ -225,6 +250,13 @@ export default function NationalMap() {
             <Shield className="w-3.5 h-3.5" />
             Veteran Density
           </button>
+          <button
+            onClick={() => setShowCoverageGaps(v => !v)}
+            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded border font-medium transition-colors ${showCoverageGaps ? 'bg-red-600 text-white border-red-600' : 'bg-background text-muted-foreground border-border'}`}
+          >
+            <AlertTriangle className="w-3.5 h-3.5" />
+            Coverage Gaps
+          </button>
         </div>
 
         {/* Map + Legend */}
@@ -267,6 +299,32 @@ export default function NationalMap() {
                     </CircleMarker>
                   );
                 })}
+
+                {/* Coverage gap highlight: high vet density + low facilities */}
+                {showCoverageGaps && coverageGaps.map(county => (
+                  <CircleMarker
+                    key={`gap-${county.id}`}
+                    center={[county.latitude, county.longitude]}
+                    radius={22}
+                    fillColor="transparent"
+                    fillOpacity={0}
+                    stroke={true}
+                    weight={2.5}
+                    color="#dc2626"
+                    dashArray="6 4"
+                  >
+                    <Popup>
+                      <div className="text-sm space-y-0.5">
+                        <p className="font-bold text-red-600">⚠ Coverage Gap</p>
+                        <p className="font-semibold">{county.county_name}, {county.state_abbreviation}</p>
+                        <p>Veterans: <strong>{county.veterans_population?.toLocaleString()}</strong> ({(county.vetPct * 100).toFixed(1)}% of pop)</p>
+                        <p>Facilities in county: <strong>{county.facilityCount}</strong></p>
+                        <p>Risk Score: <strong>{county.riskScore}</strong></p>
+                        <Link to={`/county-profiles/${county.id}`} className="text-blue-600 underline text-xs block mt-1">View Profile →</Link>
+                      </div>
+                    </Popup>
+                  </CircleMarker>
+                ))}
 
                 {/* Veteran population density layer */}
                 {showVeteranLayer && filtered.map(county => {
@@ -358,6 +416,7 @@ export default function NationalMap() {
                           {address && <p className="text-xs text-gray-600">{address}</p>}
                           {f.phone && <p className="text-xs text-gray-600">📞 {f.phone}</p>}
                           {county && <p className="text-xs text-gray-500">{county.county_name}, {county.state_abbreviation}</p>}
+                          {f._usedCountyCoords && <p className="text-xs text-amber-600 italic">📍 Plotted at county center</p>}
                           {f.website && <a href={f.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block">{f.website}</a>}
                           <div className="flex gap-1 mt-1 flex-wrap">
                             {f.accepts_medicaid && <span className="text-xs bg-green-100 text-green-700 px-1 rounded">Medicaid</span>}
@@ -411,6 +470,10 @@ export default function NationalMap() {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Facilities mapped</span>
                   <span className="font-medium">{filteredFacilities.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground text-red-600">Coverage gaps</span>
+                  <span className="font-medium text-red-600">{coverageGaps.length}</span>
                 </div>
               </div>
             </Card>
@@ -490,6 +553,28 @@ export default function NationalMap() {
                     <span className="text-muted-foreground">Total veterans shown</span>
                     <span className="font-medium">{filtered.reduce((s, c) => s + (c.veterans_population || 0), 0).toLocaleString()}</span>
                   </div>
+                </div>
+              </Card>
+            )}
+
+            {showCoverageGaps && coverageGaps.length > 0 && (
+              <Card className="p-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-red-600" /> Coverage Gaps
+                </h3>
+                <p className="text-xs text-muted-foreground mb-3">High veteran density + fewer than 5 facilities</p>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {coverageGaps.map(county => (
+                    <Link key={county.id} to={`/county-profiles/${county.id}`} className="block">
+                      <div className="text-xs p-2 rounded border border-red-200 bg-red-50 hover:bg-red-100 transition-colors">
+                        <div className="font-semibold text-red-800">{county.county_name}, {county.state_abbreviation}</div>
+                        <div className="flex justify-between mt-0.5 text-red-700">
+                          <span>🎖 {(county.vetPct * 100).toFixed(1)}% vets</span>
+                          <span>🏥 {county.facilityCount} facilities</span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               </Card>
             )}
