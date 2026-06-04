@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import {
   ArrowLeft, Users, Building2, Car, Hospital, ShieldCheck,
-  Brain, Pill, Activity, FileCheck, MapPin, AlertTriangle
+  Brain, Pill, Activity, FileCheck, MapPin, AlertTriangle, Shield
 } from 'lucide-react';
 import { SCORE_CATEGORIES } from '@/lib/scoringEngine';
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
@@ -216,6 +216,39 @@ export default function CountyDetail() {
             ))}
           </div>
         </Card>
+
+        {/* Veterans */}
+        {(county.veterans_population != null || county.nearest_va_facility_miles != null) && (
+          <Card className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Shield className="w-4 h-4 text-primary" />
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Veterans</h3>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              {[
+                { label: 'Veteran Population', value: county.veterans_population, icon: '🎖️' },
+                { label: 'Veterans 65+', value: county.veterans_65_plus, icon: '👴' },
+                { label: 'Service-Connected Disability', value: county.veterans_with_disability, icon: '♿' },
+                { label: 'Enrolled in VA Healthcare', value: county.veterans_enrolled_va_healthcare, icon: '🏥' },
+                { label: 'VA Disability Recipients', value: county.veterans_va_disability_recipients, icon: '💊' },
+                { label: 'VA Pension Recipients', value: county.veterans_pension_recipients, icon: '💰' },
+                { label: 'VA Facilities in County', value: county.number_of_va_facilities, icon: '🏛️' },
+                { label: 'Miles to Nearest VA', value: county.nearest_va_facility_miles != null ? `${county.nearest_va_facility_miles} mi` : null, icon: '📍', raw: true },
+              ].map(item => (
+                <div key={item.label} className="bg-muted/40 rounded-lg p-3">
+                  <p className="text-lg mb-1">{item.icon}</p>
+                  <p className="text-xs text-muted-foreground">{item.label}</p>
+                  <p className="font-semibold text-base">
+                    {item.raw ? (item.value ?? '—') : (item.value != null ? item.value.toLocaleString() : '—')}
+                  </p>
+                  {!item.raw && item.value != null && county.population_total ? (
+                    <p className="text-xs text-muted-foreground mt-0.5">{((item.value / county.population_total) * 100).toFixed(1)}% of pop.</p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
 
         {/* Facilities & Businesses */}
         <FacilityList countyId={countyId} countyState={county.state_abbreviation} />

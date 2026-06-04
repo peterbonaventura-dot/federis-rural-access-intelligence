@@ -108,6 +108,38 @@
     "snap_recipients": {
       "type": "number",
       "description": "Number of SNAP (food stamps) recipients"
+    },
+    "veterans_population": {
+      "type": "number",
+      "description": "Total number of veterans residing in the county"
+    },
+    "veterans_65_plus": {
+      "type": "number",
+      "description": "Number of veterans aged 65 or older"
+    },
+    "veterans_with_disability": {
+      "type": "number",
+      "description": "Number of veterans with a service-connected disability"
+    },
+    "veterans_enrolled_va_healthcare": {
+      "type": "number",
+      "description": "Number of veterans enrolled in VA healthcare"
+    },
+    "veterans_va_disability_recipients": {
+      "type": "number",
+      "description": "Number of veterans receiving VA disability compensation"
+    },
+    "veterans_pension_recipients": {
+      "type": "number",
+      "description": "Number of veterans receiving VA pension benefits"
+    },
+    "nearest_va_facility_miles": {
+      "type": "number",
+      "description": "Average miles to nearest VA medical center or clinic"
+    },
+    "number_of_va_facilities": {
+      "type": "number",
+      "description": "Number of VA facilities (medical centers, CBOCs) in the county"
     }
   },
   "required": [
