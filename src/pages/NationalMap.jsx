@@ -13,10 +13,50 @@ import { Input } from '@/components/ui/input';
 import { Search, Filter } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 
+const FACILITY_COLORS = {
+  hospital: '#dc2626',
+  critical_access_hospital: '#b91c1c',
+  rural_health_clinic: '#2563eb',
+  fqhc: '#1d4ed8',
+  pharmacy: '#7c3aed',
+  behavioral_health: '#ea580c',
+  substance_use: '#c2410c',
+  home_health_agency: '#0d9488',
+  hcbs_provider: '#0f766e',
+  personal_care: '#0891b2',
+  area_agency_on_aging: '#16a34a',
+  social_security_office: '#4b5563',
+  transportation: '#ca8a04',
+  community_org: '#15803d',
+  hud_housing: '#4f46e5',
+  other: '#6b7280',
+};
+
+const FACILITY_LABELS = {
+  hospital: 'Hospital',
+  critical_access_hospital: 'Critical Access Hospital',
+  rural_health_clinic: 'Rural Health Clinic',
+  fqhc: 'FQHC',
+  pharmacy: 'Pharmacy',
+  behavioral_health: 'Behavioral Health',
+  substance_use: 'Substance Use',
+  home_health_agency: 'Home Health Agency',
+  hcbs_provider: 'HCBS Provider',
+  personal_care: 'Personal Care',
+  area_agency_on_aging: 'Area Agency on Aging',
+  social_security_office: 'Social Security Office',
+  transportation: 'Transportation',
+  community_org: 'Community Org',
+  hud_housing: 'HUD Housing',
+  other: 'Other',
+};
+
 export default function NationalMap() {
   const [stateFilter, setStateFilter] = useState('all');
   const [cohortFilter, setCohortFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [facilityTypeFilter, setFacilityTypeFilter] = useState('all');
+  const [showFacilities, setShowFacilities] = useState(true);
 
   const { data: counties = [] } = useQuery({
     queryKey: ['counties'],
@@ -28,8 +68,17 @@ export default function NationalMap() {
     queryFn: () => base44.entities.RuralAccessRiskScore.list('-overall_rural_access_risk_score', 200),
   });
 
+  const { data: allFacilities = [] } = useQuery({
+    queryKey: ['facilities-all'],
+    queryFn: () => base44.entities.CountyFacility.list('-created_date', 500),
+  });
+
   const scoreMap = {};
   riskScores.forEach(s => { scoreMap[s.county_id] = s; });
+
+  // Build county lookup for facilities
+  const countyMap = {};
+  counties.forEach(c => { countyMap[c.id] = c; });
 
   const states = [...new Set(counties.map(c => c.state))].sort();
 
@@ -41,6 +90,19 @@ export default function NationalMap() {
       return c.latitude && c.longitude;
     });
   }, [counties, stateFilter, cohortFilter, search]);
+
+  // Filter facilities to counties shown on map + type filter, only those with coordinates
+  const filteredCountyIds = useMemo(() => new Set(filtered.map(c => c.id)), [filtered]);
+
+  const filteredFacilities = useMemo(() => {
+    return allFacilities.filter(f => {
+      if (!f.latitude || !f.longitude) return false;
+      if (!filteredCountyIds.has(f.county_id)) return false;
+      if (facilityTypeFilter !== 'all' && f.facility_type !== facilityTypeFilter) return false;
+      if (!f.is_active) return false;
+      return true;
+    });
+  }, [allFacilities, filteredCountyIds, facilityTypeFilter]);
 
   return (
     <div>
@@ -80,6 +142,23 @@ export default function NationalMap() {
               <SelectItem value="national">National</SelectItem>
             </SelectContent>
           </Select>
+          <Select value={facilityTypeFilter} onValueChange={setFacilityTypeFilter}>
+            <SelectTrigger className="w-52">
+              <SelectValue placeholder="All Facility Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Facility Types</SelectItem>
+              {Object.entries(FACILITY_LABELS).map(([val, lbl]) => (
+                <SelectItem key={val} value={val}>{lbl}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <button
+            onClick={() => setShowFacilities(v => !v)}
+            className={`text-xs px-3 py-1.5 rounded border font-medium transition-colors ${showFacilities ? 'bg-primary text-primary-foreground border-primary' : 'bg-background text-muted-foreground border-border'}`}
+          >
+            {showFacilities ? '● Facilities On' : '○ Facilities Off'}
+          </button>
         </div>
 
         {/* Map + Legend */}
@@ -117,6 +196,41 @@ export default function NationalMap() {
                           <p>Population: {county.population_total?.toLocaleString()}</p>
                           {score?.care_desert_flag && <p className="text-red-600 font-semibold">⚠ Care Desert</p>}
                           <Link to={`/county-profiles/${county.id}`} className="text-blue-600 underline text-xs">View Profile →</Link>
+                        </div>
+                      </Popup>
+                    </CircleMarker>
+                  );
+                })}
+
+                {/* Individual facility markers */}
+                {showFacilities && filteredFacilities.map(f => {
+                  const color = FACILITY_COLORS[f.facility_type] || FACILITY_COLORS.other;
+                  const county = countyMap[f.county_id];
+                  const address = [f.address_street, f.address_city, f.address_state, f.address_zip].filter(Boolean).join(', ');
+                  return (
+                    <CircleMarker
+                      key={f.id}
+                      center={[f.latitude, f.longitude]}
+                      radius={5}
+                      fillColor={color}
+                      fillOpacity={0.9}
+                      stroke={true}
+                      weight={1}
+                      color="#fff"
+                    >
+                      <Popup>
+                        <div className="text-sm space-y-0.5">
+                          <p className="font-bold">{f.facility_name}</p>
+                          <p className="text-xs font-medium" style={{ color }}>{FACILITY_LABELS[f.facility_type] || f.facility_type}</p>
+                          {address && <p className="text-xs text-gray-600">{address}</p>}
+                          {f.phone && <p className="text-xs text-gray-600">📞 {f.phone}</p>}
+                          {county && <p className="text-xs text-gray-500">{county.county_name}, {county.state_abbreviation}</p>}
+                          {f.website && <a href={f.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block">{f.website}</a>}
+                          <div className="flex gap-1 mt-1 flex-wrap">
+                            {f.accepts_medicaid && <span className="text-xs bg-green-100 text-green-700 px-1 rounded">Medicaid</span>}
+                            {f.accepts_medicare && <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded">Medicare</span>}
+                            {f.accepts_uninsured && <span className="text-xs bg-amber-100 text-amber-700 px-1 rounded">Uninsured</span>}
+                          </div>
                         </div>
                       </Popup>
                     </CircleMarker>
@@ -161,8 +275,34 @@ export default function NationalMap() {
                   <span className="text-muted-foreground">Care deserts</span>
                   <span className="font-medium text-red-600">{filtered.filter(c => scoreMap[c.id]?.care_desert_flag).length}</span>
                 </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Facilities mapped</span>
+                  <span className="font-medium">{filteredFacilities.length}</span>
+                </div>
               </div>
             </Card>
+
+            {showFacilities && filteredFacilities.length > 0 && (
+              <Card className="p-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Facility Types</h3>
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                  {Object.entries(
+                    filteredFacilities.reduce((acc, f) => {
+                      acc[f.facility_type] = (acc[f.facility_type] || 0) + 1;
+                      return acc;
+                    }, {})
+                  ).sort((a, b) => b[1] - a[1]).map(([type, count]) => (
+                    <div key={type} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: FACILITY_COLORS[type] || '#6b7280' }} />
+                        <span className="truncate">{FACILITY_LABELS[type] || type}</span>
+                      </div>
+                      <span className="font-medium ml-1">{count}</span>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
 
             <Card className="p-4">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Flags</h3>
