@@ -35,6 +35,7 @@ import MemberHelpCenter from '@/pages/MemberHelpCenter';
 import MemberBenefits from '@/pages/MemberBenefits';
 import MemberSupport from '@/pages/MemberSupport';
 import MemberProfile from '@/pages/MemberProfile';
+import MemberCoverageGap from '@/pages/MemberCoverageGap';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -90,6 +91,7 @@ const AuthenticatedApp = () => {
           <Route path="/member-benefits" element={<MemberBenefits />} />
           <Route path="/member-support" element={<MemberSupport />} />
           <Route path="/member-profile" element={<MemberProfile />} />
+          <Route path="/member-coverage-gap" element={<MemberCoverageGap />} />
         </Route>
       </Route>
 
