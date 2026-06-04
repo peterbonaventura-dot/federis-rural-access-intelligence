@@ -101,7 +101,7 @@ export default function NationalMap() {
 
   const { data: allFacilities = [] } = useQuery({
     queryKey: ['facilities-all'],
-    queryFn: () => base44.entities.CountyFacility.list('-created_date', 500),
+    queryFn: () => base44.entities.CountyFacility.list('-created_date', 1000),
   });
 
   const scoreMap = {};
@@ -124,15 +124,29 @@ export default function NationalMap() {
 
   const filteredCountyIds = useMemo(() => new Set(filtered.map(c => c.id)), [filtered]);
 
-  // Enrich facilities with county coords as fallback when facility has no own lat/lng
+  // Enrich facilities with county coords + jitter so stacked facilities spread out visibly
   const facilitiesWithCoords = useMemo(() => {
+    // Track how many facilities we've placed at each county to offset them
+    const countySlotMap = {};
     return allFacilities
       .filter(f => filteredCountyIds.has(f.county_id) && f.is_active)
       .map(f => {
         if (f.latitude && f.longitude) return f;
         const county = countyMap[f.county_id];
         if (county?.latitude && county?.longitude) {
-          return { ...f, latitude: county.latitude, longitude: county.longitude, _usedCountyCoords: true };
+          // Spiral jitter: spread facilities around the county center
+          const slot = countySlotMap[f.county_id] || 0;
+          countySlotMap[f.county_id] = slot + 1;
+          const angle = (slot * 137.5) * (Math.PI / 180); // golden angle spiral
+          const radius = 0.02 + (Math.floor(slot / 8) * 0.025); // expand ring every 8
+          const jitterLat = Math.sin(angle) * radius;
+          const jitterLng = Math.cos(angle) * radius;
+          return {
+            ...f,
+            latitude: county.latitude + jitterLat,
+            longitude: county.longitude + jitterLng,
+            _usedCountyCoords: true,
+          };
         }
         return null;
       })
@@ -258,6 +272,16 @@ export default function NationalMap() {
             Coverage Gaps
           </button>
         </div>
+
+        {/* Notice: facilities using county-center coords */}
+        {showFacilities && filteredFacilities.length > 0 && filteredFacilities.some(f => f._usedCountyCoords) && (
+          <div className="flex items-center gap-2 text-xs bg-amber-50 border border-amber-200 rounded-md px-3 py-2 text-amber-800">
+            <span>📍</span>
+            <span>
+              <strong>{filteredFacilities.filter(f => f._usedCountyCoords).length}</strong> of {filteredFacilities.length} facilities lack precise GPS coordinates and are plotted in a spiral pattern around their county center. Zoom in to see individual facilities.
+            </span>
+          </div>
+        )}
 
         {/* Map + Legend */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -402,7 +426,7 @@ export default function NationalMap() {
                     <CircleMarker
                       key={f.id}
                       center={[f.latitude, f.longitude]}
-                      radius={5}
+                      radius={f._usedCountyCoords ? 6 : 5}
                       fillColor={color}
                       fillOpacity={0.9}
                       stroke={true}
