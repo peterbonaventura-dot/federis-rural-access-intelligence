@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { SCORE_CATEGORIES } from '@/lib/scoringEngine';
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
+import FacilityList from '@/components/county/FacilityList';
 
 export default function CountyDetail() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -191,6 +192,9 @@ export default function CountyDetail() {
             </div>
           </Card>
         )}
+
+        {/* Facilities & Businesses */}
+        <FacilityList countyId={countyId} countyState={county.state_abbreviation} />
 
         {/* Operational Data */}
         {ops && (

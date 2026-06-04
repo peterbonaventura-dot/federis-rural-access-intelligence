@@ -1,0 +1,81 @@
+{
+  "name": "CountyFacility",
+  "type": "object",
+  "properties": {
+    "county_id": {
+      "type": "string",
+      "description": "Reference to County entity"
+    },
+    "facility_name": {
+      "type": "string",
+      "description": "Name of the facility or business"
+    },
+    "facility_type": {
+      "type": "string",
+      "enum": [
+        "hospital",
+        "critical_access_hospital",
+        "rural_health_clinic",
+        "fqhc",
+        "pharmacy",
+        "behavioral_health",
+        "substance_use",
+        "home_health_agency",
+        "hcbs_provider",
+        "personal_care",
+        "area_agency_on_aging",
+        "social_security_office",
+        "transportation",
+        "community_org",
+        "hud_housing",
+        "other"
+      ],
+      "description": "Type of facility"
+    },
+    "address_street": {
+      "type": "string"
+    },
+    "address_city": {
+      "type": "string"
+    },
+    "address_state": {
+      "type": "string"
+    },
+    "address_zip": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    },
+    "accepts_medicaid": {
+      "type": "boolean"
+    },
+    "accepts_medicare": {
+      "type": "boolean"
+    },
+    "accepts_uninsured": {
+      "type": "boolean"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "county_id",
+    "facility_name",
+    "facility_type"
+  ]
+}
