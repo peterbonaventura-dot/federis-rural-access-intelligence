@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import CoverageCard from '@/components/benefits/CoverageCard';
 import ProfileSetupBanner from '@/components/benefits/ProfileSetupBanner';
+import CountyClinicsPanel from '@/components/member/CountyClinicsPanel';
 
 const COVERAGE_LABELS = {
   medicaid_only: { label: 'Medicaid', color: 'bg-blue-100 text-blue-800' },
@@ -183,6 +184,11 @@ export default function MemberDashboard() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* In-Network Clinics + Coverage Gaps */}
+        {profile && (
+          <CountyClinicsPanel profile={profile} coverages={coverages} />
         )}
 
         {/* Key Benefits Preview */}
