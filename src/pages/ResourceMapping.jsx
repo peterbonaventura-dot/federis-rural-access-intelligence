@@ -38,6 +38,7 @@ export default function ResourceMapping() {
     name: r.county?.county_name || 'Unknown',
     HCBS: r.number_of_hcbs_providers || 0,
     'Home Health': r.number_of_home_health_agencies || 0,
+    Hospitals: (r.number_of_hospitals || 0) + (r.number_of_critical_access_hospitals || 0),
     'BH Providers': r.number_of_behavioral_health_providers || 0,
     Pharmacies: r.number_of_pharmacies || 0,
   }));
@@ -70,6 +71,7 @@ export default function ResourceMapping() {
                   <Legend />
                   <Bar dataKey="HCBS" fill="hsl(210, 70%, 32%)" radius={[2, 2, 0, 0]} />
                   <Bar dataKey="Home Health" fill="hsl(175, 42%, 40%)" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="Hospitals" fill="hsl(0, 72%, 51%)" radius={[2, 2, 0, 0]} />
                   <Bar dataKey="BH Providers" fill="hsl(32, 85%, 55%)" radius={[2, 2, 0, 0]} />
                   <Bar dataKey="Pharmacies" fill="hsl(260, 50%, 50%)" radius={[2, 2, 0, 0]} />
                 </BarChart>
