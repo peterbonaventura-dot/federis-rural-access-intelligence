@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, ExternalLink } from 'lucide-react';
+import { Plus, ExternalLink, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function DataSources() {
@@ -50,6 +50,14 @@ export default function DataSources() {
         actions={<Button size="sm" onClick={() => setShowAdd(true)}><Plus className="w-4 h-4 mr-1" /> Add Source</Button>}
       />
       <div className="p-8 space-y-6">
+        {/* Auto-sync status banner */}
+        <div className="flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          <RefreshCw className="w-4 h-4 text-green-600 shrink-0" />
+          <div>
+            <span className="font-semibold">CMS Enrollment data syncs automatically every Monday at 3 AM</span>
+            <span className="text-green-700 ml-2">— Medicare, Medicaid, dual-eligible, and SSI counts are updated for all counties with a FIPS code. Results are logged in the Audit Log.</span>
+          </div>
+        </div>
         <CmsImportPanel />
         <CmsEnrollmentImportPanel />
         <Card>
