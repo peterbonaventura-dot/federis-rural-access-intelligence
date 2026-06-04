@@ -1,0 +1,63 @@
+{
+  "name": "BenefitsCoverage",
+  "type": "object",
+  "properties": {
+    "member_profile_id": {
+      "type": "string",
+      "description": "Reference to MemberProfile"
+    },
+    "benefit_category": {
+      "type": "string",
+      "enum": [
+        "medical",
+        "dental",
+        "vision",
+        "mental_health",
+        "prescription_drugs",
+        "home_health",
+        "personal_care",
+        "transportation",
+        "dme",
+        "hospice",
+        "other"
+      ]
+    },
+    "benefit_name": {
+      "type": "string"
+    },
+    "coverage_status": {
+      "type": "string",
+      "enum": [
+        "covered",
+        "not_covered",
+        "requires_prior_auth",
+        "limited"
+      ],
+      "default": "covered"
+    },
+    "coverage_notes": {
+      "type": "string"
+    },
+    "copay_amount": {
+      "type": "number"
+    },
+    "annual_limit": {
+      "type": "number"
+    },
+    "used_to_date": {
+      "type": "number"
+    },
+    "prior_auth_required": {
+      "type": "boolean",
+      "default": false
+    },
+    "provider_network": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "member_profile_id",
+    "benefit_category",
+    "benefit_name"
+  ]
+}

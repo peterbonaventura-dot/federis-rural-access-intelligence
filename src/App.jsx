@@ -30,6 +30,11 @@ import WorkforceCapacity from '@/pages/WorkforceCapacity';
 import HospitalDischargeRisk from '@/pages/HospitalDischargeRisk';
 import BenefitsAccess from '@/pages/BenefitsAccess';
 import CountyNeedsProfilePage from '@/pages/CountyNeedsProfilePage';
+import MemberDashboard from '@/pages/MemberDashboard';
+import MemberHelpCenter from '@/pages/MemberHelpCenter';
+import MemberBenefits from '@/pages/MemberBenefits';
+import MemberSupport from '@/pages/MemberSupport';
+import MemberProfile from '@/pages/MemberProfile';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -80,6 +85,11 @@ const AuthenticatedApp = () => {
           <Route path="/hospital-discharge-risk" element={<HospitalDischargeRisk />} />
           <Route path="/benefits-access" element={<BenefitsAccess />} />
           <Route path="/county-profiles/:id/needs-profile" element={<CountyNeedsProfilePage />} />
+          <Route path="/member-dashboard" element={<MemberDashboard />} />
+          <Route path="/member-help-center" element={<MemberHelpCenter />} />
+          <Route path="/member-benefits" element={<MemberBenefits />} />
+          <Route path="/member-support" element={<MemberSupport />} />
+          <Route path="/member-profile" element={<MemberProfile />} />
         </Route>
       </Route>
 

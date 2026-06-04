@@ -1,0 +1,79 @@
+{
+  "name": "MemberProfile",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string"
+    },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date"
+    },
+    "medicaid_id": {
+      "type": "string"
+    },
+    "medicare_id": {
+      "type": "string"
+    },
+    "coverage_type": {
+      "type": "string",
+      "enum": [
+        "medicaid_only",
+        "medicare_only",
+        "dual_eligible",
+        "none"
+      ],
+      "default": "none"
+    },
+    "plan_name": {
+      "type": "string"
+    },
+    "plan_start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "plan_end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "county": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "primary_care_provider": {
+      "type": "string"
+    },
+    "pcn_number": {
+      "type": "string"
+    },
+    "enrollment_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "pending",
+        "inactive",
+        "terminated"
+      ],
+      "default": "pending"
+    },
+    "renewal_due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "full_name",
+    "coverage_type"
+  ]
+}

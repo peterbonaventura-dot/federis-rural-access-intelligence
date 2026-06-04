@@ -1,0 +1,59 @@
+{
+  "name": "HelpArticle",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "enrollment",
+        "coverage",
+        "billing",
+        "appeals",
+        "prescriptions",
+        "transportation",
+        "home_health",
+        "mental_health",
+        "general"
+      ]
+    },
+    "coverage_type": {
+      "type": "string",
+      "enum": [
+        "medicaid",
+        "medicare",
+        "dual",
+        "all"
+      ],
+      "default": "all"
+    },
+    "content": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "string"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": true
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "category",
+    "content"
+  ]
+}

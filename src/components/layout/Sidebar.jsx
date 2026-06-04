@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Globe, MapPin, Building, Users, BarChart3,
   Map, Database, FileText, HardDrive, Settings, ChevronLeft,
-  ChevronRight, Shield, Wifi, Briefcase, Hospital, ShieldCheck
+  ChevronRight, Shield, Wifi, Briefcase, Hospital, ShieldCheck,
+  Heart, HelpCircle, MessageSquare, User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -20,6 +21,12 @@ const NAV_ITEMS = [
   { path: '/hospital-discharge-risk', label: 'Discharge Risk', icon: Hospital },
   { path: '/benefits-access', label: 'Benefits Access', icon: ShieldCheck },
   { path: '/operational-data', label: 'Operational Data', icon: Database },
+  { divider: true, label: 'Member Portal' },
+  { path: '/member-dashboard', label: 'Member Dashboard', icon: Heart },
+  { path: '/member-benefits', label: 'My Benefits', icon: Shield },
+  { path: '/member-help-center', label: 'Help Center', icon: HelpCircle },
+  { path: '/member-support', label: 'Support', icon: MessageSquare },
+  { path: '/member-profile', label: 'My Profile', icon: User },
   { path: '/research-briefs', label: 'Research Briefs', icon: FileText },
   { path: '/data-sources', label: 'Data Sources', icon: HardDrive },
   { path: '/settings', label: 'Settings', icon: Settings },
@@ -48,7 +55,18 @@ export default function Sidebar({ collapsed, setCollapsed }) {
 
       {/* Nav */}
       <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
-        {NAV_ITEMS.map(({ path, label, icon: Icon }) => {
+        {NAV_ITEMS.map((item, idx) => {
+          if (item.divider) {
+            return collapsed ? (
+              <div key={idx} className="border-t border-sidebar-border my-2" />
+            ) : (
+              <div key={idx} className="px-3 pt-3 pb-1">
+                <div className="border-t border-sidebar-border mb-2" />
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/40">{item.label}</p>
+              </div>
+            );
+          }
+          const { path, label, icon: Icon } = item;
           const active = location.pathname === path ||
             (path !== '/' && location.pathname.startsWith(path));
           return (
