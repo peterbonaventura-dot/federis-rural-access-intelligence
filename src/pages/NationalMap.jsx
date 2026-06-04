@@ -439,7 +439,11 @@ export default function NationalMap() {
                           <p className="text-xs font-medium" style={{ color }}>{FACILITY_LABELS[f.facility_type] || f.facility_type}</p>
                           {address && <p className="text-xs text-gray-600">{address}</p>}
                           {f.phone && <p className="text-xs text-gray-600">📞 {f.phone}</p>}
-                          {county && <p className="text-xs text-gray-500">{county.county_name}, {county.state_abbreviation}</p>}
+                          {county && (
+                            <Link to={`/county-profiles/${county.id}`} className="text-blue-600 underline text-xs block">
+                              {county.county_name}, {county.state_abbreviation} →
+                            </Link>
+                          )}
                           {f._usedCountyCoords && <p className="text-xs text-amber-600 italic">📍 Plotted at county center</p>}
                           {f.website && <a href={f.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-xs block">{f.website}</a>}
                           <div className="flex gap-1 mt-1 flex-wrap">
