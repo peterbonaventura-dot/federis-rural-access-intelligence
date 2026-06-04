@@ -11,6 +11,8 @@ import StatCard from '@/components/shared/StatCard';
 import { Users, TrendingDown, DollarSign, GraduationCap, AlertTriangle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { getRiskColor } from '@/lib/scoringEngine';
+import UnemployedCaregiverPipeline from '@/components/workforce/UnemployedCaregiverPipeline';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function WorkforceCapacity() {
   const [stateFilter, setStateFilter] = useState('all');
@@ -88,6 +90,16 @@ export default function WorkforceCapacity() {
         }
       />
       <div className="p-8 space-y-6">
+        <Tabs defaultValue="overview">
+          <TabsList>
+            <TabsTrigger value="overview">Workforce Overview</TabsTrigger>
+            <TabsTrigger value="pipeline">Unemployed → Caregiver Pipeline</TabsTrigger>
+          </TabsList>
+          <TabsContent value="pipeline" className="mt-6">
+            <UnemployedCaregiverPipeline county={stateFilter !== 'all' ? counties.find(c => c.state === stateFilter) : null} />
+          </TabsContent>
+          <TabsContent value="overview" className="mt-6">
+        <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard title="Workforce Crisis Counties" value={crisis} icon={AlertTriangle} subtitle="Score ≥ 75 on shortage" />
           <StatCard title="Avg Caregiver Turnover" value={avgTurnover != null ? `${avgTurnover}%` : '—'} icon={TrendingDown} subtitle="Annual rate across cohort" />
@@ -228,6 +240,9 @@ export default function WorkforceCapacity() {
             )}
           </CardContent>
         </Card>
+        </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
