@@ -9,7 +9,7 @@ import { Download, CheckCircle2, AlertCircle, Loader2, Building2 } from 'lucide-
 
 export default function CmsImportPanel() {
   const [selectedCountyId, setSelectedCountyId] = useState('');
-  const [providerTypes, setProviderTypes] = useState(['hospitals', 'home_health']);
+  const [providerTypes, setProviderTypes] = useState(['hospitals', 'home_health', 'behavioral_health', 'fqhc', 'substance_use', 'dialysis']);
   const [status, setStatus] = useState(null); // null | 'loading' | { success, imported, county } | { error }
 
   const { data: counties = [] } = useQuery({
@@ -45,6 +45,10 @@ export default function CmsImportPanel() {
   const PROVIDER_TYPE_OPTIONS = [
     { key: 'hospitals', label: 'Hospitals & Critical Access', color: 'bg-red-100 text-red-700' },
     { key: 'home_health', label: 'Home Health Agencies', color: 'bg-teal-100 text-teal-700' },
+    { key: 'behavioral_health', label: 'Behavioral Health (Psychiatric)', color: 'bg-orange-100 text-orange-700' },
+    { key: 'fqhc', label: 'FQHCs (Community Health)', color: 'bg-blue-100 text-blue-700' },
+    { key: 'substance_use', label: 'Opioid Treatment / Substance Use', color: 'bg-purple-100 text-purple-700' },
+    { key: 'dialysis', label: 'Dialysis Facilities', color: 'bg-cyan-100 text-cyan-700' },
   ];
 
   return (
@@ -55,10 +59,13 @@ export default function CmsImportPanel() {
         <Badge className="bg-blue-100 text-blue-700 text-xs">Live API</Badge>
       </div>
       <p className="text-xs text-muted-foreground mb-4">
-        Pull real provider names, addresses, phone numbers, and quality ratings directly from the{' '}
+        Pull real provider names, addresses, and phone numbers directly from{' '}
         <a href="https://data.cms.gov/provider-data" target="_blank" rel="noopener noreferrer" className="text-primary underline">
           CMS Provider Data Catalog
-        </a>. Matching is done by county name and state. Duplicates are automatically skipped.
+        </a>{' '}and the{' '}
+        <a href="https://data.cms.gov" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+          CMS Data API
+        </a>. Includes hospitals, behavioral health, FQHCs, OTP/substance use, dialysis, and home health. Duplicates are automatically skipped.
       </p>
 
       <div className="space-y-4">
