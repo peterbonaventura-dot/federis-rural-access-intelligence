@@ -1,0 +1,85 @@
+{
+  "name": "CountyResourceProfile",
+  "type": "object",
+  "properties": {
+    "county_id": {
+      "type": "string",
+      "description": "Reference to County entity"
+    },
+    "number_of_hcbs_providers": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_personal_care_providers": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_home_health_agencies": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_hospitals": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_critical_access_hospitals": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_rural_health_clinics": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_fqhcs": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_primary_care_offices": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_pharmacies": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_behavioral_health_providers": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_substance_use_providers": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_social_security_offices": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_area_agencies_on_aging": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_transportation_resources": {
+      "type": "number",
+      "default": 0
+    },
+    "number_of_community_service_orgs": {
+      "type": "number",
+      "default": 0
+    },
+    "nearest_hospital_miles_avg": {
+      "type": "number"
+    },
+    "nearest_pharmacy_miles_avg": {
+      "type": "number"
+    },
+    "nearest_social_security_office_miles_avg": {
+      "type": "number"
+    },
+    "nearest_behavioral_health_provider_miles_avg": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "county_id"
+  ]
+}

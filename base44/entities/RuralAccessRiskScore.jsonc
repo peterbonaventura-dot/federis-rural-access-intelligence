@@ -1,0 +1,73 @@
+{
+  "name": "RuralAccessRiskScore",
+  "type": "object",
+  "properties": {
+    "county_id": {
+      "type": "string"
+    },
+    "reporting_period_start": {
+      "type": "string",
+      "format": "date"
+    },
+    "reporting_period_end": {
+      "type": "string",
+      "format": "date"
+    },
+    "overall_rural_access_risk_score": {
+      "type": "number"
+    },
+    "workforce_shortage_score": {
+      "type": "number"
+    },
+    "provider_capacity_score": {
+      "type": "number"
+    },
+    "transportation_burden_score": {
+      "type": "number"
+    },
+    "hospital_discharge_risk_score": {
+      "type": "number"
+    },
+    "benefits_access_score": {
+      "type": "number"
+    },
+    "behavioral_health_access_score": {
+      "type": "number"
+    },
+    "pharmacy_access_score": {
+      "type": "number"
+    },
+    "service_continuity_score": {
+      "type": "number"
+    },
+    "evv_documentation_burden_score": {
+      "type": "number"
+    },
+    "care_desert_flag": {
+      "type": "boolean",
+      "default": false
+    },
+    "benefits_access_desert_flag": {
+      "type": "boolean",
+      "default": false
+    },
+    "hospital_discharge_risk_flag": {
+      "type": "boolean",
+      "default": false
+    },
+    "workforce_crisis_flag": {
+      "type": "boolean",
+      "default": false
+    },
+    "high_priority_research_flag": {
+      "type": "boolean",
+      "default": false
+    },
+    "score_explanation": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "county_id"
+  ]
+}

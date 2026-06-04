@@ -1,0 +1,81 @@
+{
+  "name": "ResearchBrief",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "brief_type": {
+      "type": "string",
+      "enum": [
+        "county_profile",
+        "state_analysis",
+        "topic_study",
+        "national_overview",
+        "policy_brief",
+        "rapid_response"
+      ]
+    },
+    "geography_scope": {
+      "type": "string",
+      "enum": [
+        "county",
+        "state",
+        "regional",
+        "national"
+      ]
+    },
+    "counties_included": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reporting_period_start": {
+      "type": "string",
+      "format": "date"
+    },
+    "reporting_period_end": {
+      "type": "string",
+      "format": "date"
+    },
+    "executive_summary": {
+      "type": "string"
+    },
+    "key_findings": {
+      "type": "string"
+    },
+    "policy_implications": {
+      "type": "string"
+    },
+    "recommended_interventions": {
+      "type": "string"
+    },
+    "limitations": {
+      "type": "string"
+    },
+    "generated_by": {
+      "type": "string",
+      "enum": [
+        "ai",
+        "manual",
+        "hybrid"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "in_review",
+        "approved",
+        "published",
+        "archived"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "title",
+    "brief_type"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "name": "DataSource",
+  "type": "object",
+  "properties": {
+    "source_name": {
+      "type": "string"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "public_federal",
+        "public_state",
+        "internal_operational",
+        "research_partner",
+        "census",
+        "cms",
+        "hrsa",
+        "other"
+      ]
+    },
+    "source_url": {
+      "type": "string"
+    },
+    "update_frequency": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "monthly",
+        "quarterly",
+        "annually",
+        "ad_hoc"
+      ]
+    },
+    "fields_used": {
+      "type": "string"
+    },
+    "last_imported_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_name",
+    "source_type"
+  ]
+}

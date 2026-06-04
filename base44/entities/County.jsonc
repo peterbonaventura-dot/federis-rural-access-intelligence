@@ -1,0 +1,95 @@
+{
+  "name": "County",
+  "type": "object",
+  "properties": {
+    "county_name": {
+      "type": "string",
+      "description": "County name"
+    },
+    "state": {
+      "type": "string",
+      "description": "Full state name"
+    },
+    "state_abbreviation": {
+      "type": "string",
+      "description": "Two-letter state code"
+    },
+    "fips_code": {
+      "type": "string",
+      "description": "5-digit FIPS code"
+    },
+    "rural_urban_code": {
+      "type": "number",
+      "description": "USDA Rural-Urban Continuum code 1-9"
+    },
+    "population_total": {
+      "type": "number"
+    },
+    "population_65_plus": {
+      "type": "number"
+    },
+    "population_disabled_estimate": {
+      "type": "number"
+    },
+    "poverty_rate": {
+      "type": "number"
+    },
+    "unemployment_rate": {
+      "type": "number"
+    },
+    "median_income": {
+      "type": "number"
+    },
+    "persistent_poverty_flag": {
+      "type": "boolean",
+      "default": false
+    },
+    "frontier_flag": {
+      "type": "boolean",
+      "default": false
+    },
+    "tribal_connected_flag": {
+      "type": "boolean",
+      "default": false
+    },
+    "appalachian_flag": {
+      "type": "boolean",
+      "default": false
+    },
+    "delta_region_flag": {
+      "type": "boolean",
+      "default": false
+    },
+    "service_area_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "planned",
+        "inactive"
+      ],
+      "default": "planned"
+    },
+    "pilot_cohort_status": {
+      "type": "string",
+      "enum": [
+        "pilot",
+        "expansion",
+        "national",
+        "none"
+      ],
+      "default": "none"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "county_name",
+    "state",
+    "state_abbreviation",
+    "fips_code"
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "name": "OperationalServiceData",
+  "type": "object",
+  "properties": {
+    "county_id": {
+      "type": "string"
+    },
+    "reporting_period_start": {
+      "type": "string",
+      "format": "date"
+    },
+    "reporting_period_end": {
+      "type": "string",
+      "format": "date"
+    },
+    "referral_count": {
+      "type": "number",
+      "default": 0
+    },
+    "accepted_referral_count": {
+      "type": "number",
+      "default": 0
+    },
+    "declined_referral_count": {
+      "type": "number",
+      "default": 0
+    },
+    "active_client_count": {
+      "type": "number",
+      "default": 0
+    },
+    "high_need_client_count": {
+      "type": "number",
+      "default": 0
+    },
+    "authorized_hours_total": {
+      "type": "number",
+      "default": 0
+    },
+    "staffed_hours_total": {
+      "type": "number",
+      "default": 0
+    },
+    "unstaffed_hours_total": {
+      "type": "number",
+      "default": 0
+    },
+    "missed_visit_count": {
+      "type": "number",
+      "default": 0
+    },
+    "late_visit_count": {
+      "type": "number",
+      "default": 0
+    },
+    "caregiver_count_available": {
+      "type": "number",
+      "default": 0
+    },
+    "caregiver_count_active": {
+      "type": "number",
+      "default": 0
+    },
+    "caregiver_count_within_10_miles": {
+      "type": "number",
+      "default": 0
+    },
+    "caregiver_count_within_25_miles": {
+      "type": "number",
+      "default": 0
+    },
+    "caregiver_count_within_50_miles": {
+      "type": "number",
+      "default": 0
+    },
+    "average_referral_to_start_days": {
+      "type": "number"
+    },
+    "median_referral_to_start_days": {
+      "type": "number"
+    },
+    "average_authorization_delay_days": {
+      "type": "number"
+    },
+    "hospital_discharge_referral_count": {
+      "type": "number",
+      "default": 0
+    },
+    "hospital_discharge_to_start_avg_days": {
+      "type": "number"
+    },
+    "evv_exception_count": {
+      "type": "number",
+      "default": 0
+    },
+    "evv_gps_exception_count": {
+      "type": "number",
+      "default": 0
+    },
+    "evv_offline_mode_count": {
+      "type": "number",
+      "default": 0
+    },
+    "poc_documentation_issue_count": {
+      "type": "number",
+      "default": 0
+    },
+    "emergency_room_referral_count": {
+      "type": "number",
+      "default": 0
+    },
+    "behavioral_health_flagged_client_count": {
+      "type": "number",
+      "default": 0
+    },
+    "transportation_barrier_count": {
+      "type": "number",
+      "default": 0
+    },
+    "language_barrier_count": {
+      "type": "number",
+      "default": 0
+    },
+    "housing_instability_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "county_id",
+    "reporting_period_start",
+    "reporting_period_end"
+  ]
+}
