@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Home } from 'lucide-react';
+import { Home, ShoppingCart } from 'lucide-react';
 
 export default function ResourceMapping() {
   const [stateFilter, setStateFilter] = useState('all');
@@ -149,6 +149,83 @@ export default function ResourceMapping() {
                       <TableCell>{r.housing_cost_burden_pct != null ? `${r.housing_cost_burden_pct}%` : '—'}</TableCell>
                       <TableCell>{r.severe_housing_cost_burden_pct != null ? `${r.severe_housing_cost_burden_pct}%` : '—'}</TableCell>
                       <TableCell>{r.housing_instability_index ?? '—'}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* SNAP Recipients Section */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              <ShoppingCart className="h-4 w-4" /> SNAP Recipients by County
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={enriched
+                .filter(r => r.county?.snap_recipients != null)
+                .sort((a, b) => (b.county?.snap_recipients || 0) - (a.county?.snap_recipients || 0))
+                .map(r => ({
+                  name: r.county?.county_name || 'Unknown',
+                  'SNAP Recipients': r.county?.snap_recipients || 0,
+                  'Pop %': r.county?.population_total
+                    ? +((r.county.snap_recipients / r.county.population_total) * 100).toFixed(1)
+                    : 0,
+                }))}>
+                <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-30} textAnchor="end" height={80} />
+                <YAxis yAxisId="left" tick={{ fontSize: 11 }} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} unit="%" />
+                <Tooltip />
+                <Legend />
+                <Bar yAxisId="left" dataKey="SNAP Recipients" fill="hsl(32, 85%, 55%)" radius={[2, 2, 0, 0]} />
+                <Bar yAxisId="right" dataKey="Pop %" fill="hsl(175, 42%, 40%)" radius={[2, 2, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* SNAP Detail Table */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              SNAP Enrollment Detail
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>County</TableHead>
+                    <TableHead>SNAP Recipients</TableHead>
+                    <TableHead>% of Population</TableHead>
+                    <TableHead>Poverty Rate</TableHead>
+                    <TableHead>Median Income</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {enriched
+                    .filter(r => r.county?.snap_recipients != null)
+                    .sort((a, b) => (b.county?.snap_recipients || 0) - (a.county?.snap_recipients || 0))
+                    .map(r => (
+                    <TableRow key={`snap-${r.id}`}>
+                      <TableCell>
+                        <Link to={`/county-profiles/${r.county_id}`} className="font-medium text-primary hover:underline text-sm">
+                          {r.county?.county_name}, {r.county?.state_abbreviation}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{r.county?.snap_recipients?.toLocaleString() ?? '—'}</TableCell>
+                      <TableCell>
+                        {r.county?.snap_recipients && r.county?.population_total
+                          ? `${((r.county.snap_recipients / r.county.population_total) * 100).toFixed(1)}%`
+                          : '—'}
+                      </TableCell>
+                      <TableCell>{r.county?.poverty_rate != null ? `${r.county.poverty_rate}%` : '—'}</TableCell>
+                      <TableCell>{r.county?.median_income != null ? `$${r.county.median_income.toLocaleString()}` : '—'}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
