@@ -77,6 +77,43 @@
     },
     "nearest_behavioral_health_provider_miles_avg": {
       "type": "number"
+    },
+    "hud_public_housing_units": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of HUD public housing units"
+    },
+    "hud_section8_vouchers": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of HUD Section 8 / Housing Choice Vouchers"
+    },
+    "hud_low_income_housing_tax_credit_units": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of LIHTC-funded units"
+    },
+    "hud_homeless_shelter_beds": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of HUD-funded homeless shelter beds"
+    },
+    "hud_rural_housing_program_units": {
+      "type": "number",
+      "default": 0,
+      "description": "USDA / HUD rural housing program units (Section 515, 502)"
+    },
+    "housing_cost_burden_pct": {
+      "type": "number",
+      "description": "% of households spending >30% income on housing"
+    },
+    "severe_housing_cost_burden_pct": {
+      "type": "number",
+      "description": "% of households spending >50% income on housing"
+    },
+    "housing_instability_index": {
+      "type": "number",
+      "description": "Composite housing instability score 0-100"
     }
   },
   "required": [

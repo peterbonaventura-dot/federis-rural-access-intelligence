@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { Home } from 'lucide-react';
 
 export default function ResourceMapping() {
   const [stateFilter, setStateFilter] = useState('all');
@@ -80,6 +81,83 @@ export default function ResourceMapping() {
           </Card>
         )}
 
+        {/* HUD Housing Section */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              <Home className="h-4 w-4" /> HUD Housing Resources
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={enriched.map(r => ({
+                name: r.county?.county_name || 'Unknown',
+                'Public Housing': r.hud_public_housing_units || 0,
+                'Sec. 8 Vouchers': r.hud_section8_vouchers || 0,
+                'LIHTC Units': r.hud_low_income_housing_tax_credit_units || 0,
+                'Shelter Beds': r.hud_homeless_shelter_beds || 0,
+              }))}>
+                <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-30} textAnchor="end" height={80} />
+                <YAxis tick={{ fontSize: 11 }} />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="Public Housing" fill="hsl(210, 70%, 32%)" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="Sec. 8 Vouchers" fill="hsl(175, 42%, 40%)" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="LIHTC Units" fill="hsl(32, 85%, 55%)" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="Shelter Beds" fill="hsl(0, 72%, 51%)" radius={[2, 2, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* HUD Housing Table */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              HUD Housing Detail by County
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>County</TableHead>
+                    <TableHead>Public Housing Units</TableHead>
+                    <TableHead>Sec. 8 Vouchers</TableHead>
+                    <TableHead>LIHTC Units</TableHead>
+                    <TableHead>Shelter Beds</TableHead>
+                    <TableHead>Rural Housing Units</TableHead>
+                    <TableHead>Cost Burden %</TableHead>
+                    <TableHead>Severe Burden %</TableHead>
+                    <TableHead>Instability Index</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {enriched.map(r => (
+                    <TableRow key={`hud-${r.id}`}>
+                      <TableCell>
+                        <Link to={`/county-profiles/${r.county_id}`} className="font-medium text-primary hover:underline text-sm">
+                          {r.county?.county_name}, {r.county?.state_abbreviation}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{r.hud_public_housing_units ?? '—'}</TableCell>
+                      <TableCell>{r.hud_section8_vouchers ?? '—'}</TableCell>
+                      <TableCell>{r.hud_low_income_housing_tax_credit_units ?? '—'}</TableCell>
+                      <TableCell>{r.hud_homeless_shelter_beds ?? '—'}</TableCell>
+                      <TableCell>{r.hud_rural_housing_program_units ?? '—'}</TableCell>
+                      <TableCell>{r.housing_cost_burden_pct != null ? `${r.housing_cost_burden_pct}%` : '—'}</TableCell>
+                      <TableCell>{r.severe_housing_cost_burden_pct != null ? `${r.severe_housing_cost_burden_pct}%` : '—'}</TableCell>
+                      <TableCell>{r.housing_instability_index ?? '—'}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Provider Resources Table */}
         <Card>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
