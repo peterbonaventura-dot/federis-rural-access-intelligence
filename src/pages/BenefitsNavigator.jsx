@@ -5,8 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import ReactMarkdown from 'react-markdown';
-import { Send, Plus, Shield, ChevronRight, Loader2, MessageSquare, Paperclip, FileText, X } from 'lucide-react';
+import { Send, Plus, Shield, ChevronRight, Loader2, MessageSquare, Paperclip, FileText, X, ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import BenefitFormFiller from '@/components/benefits/BenefitFormFiller';
 
 const AGENT_NAME = 'benefits_navigator';
 
@@ -62,8 +63,9 @@ export default function BenefitsNavigator() {
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [loadingConvos, setLoadingConvos] = useState(true);
-  const [attachedFile, setAttachedFile] = useState(null); // { name, url }
+  const [attachedFile, setAttachedFile] = useState(null);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [showFormPanel, setShowFormPanel] = useState(false);
   const bottomRef = useRef(null);
   const unsubscribeRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -152,6 +154,22 @@ export default function BenefitsNavigator() {
     }
   }
 
+  async function handleFormReady({ name, url, formLabel }) {
+    setShowFormPanel(false);
+    // Ensure there's an active conversation
+    let target = activeConversation;
+    if (!target) {
+      const convo = await base44.agents.createConversation({
+        agent_name: AGENT_NAME,
+        metadata: { name: `${formLabel} — Application` },
+      });
+      setConversations(prev => [convo, ...prev]);
+      await openConversation(convo);
+      target = convo;
+    }
+    await sendMessage(target, `I've completed the ${formLabel} intake form. Please review it and help me with next steps.`, url);
+  }
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -175,34 +193,54 @@ export default function BenefitsNavigator() {
               <p className="text-xs text-muted-foreground">Federis Health Technology</p>
             </div>
           </div>
-          <Button className="w-full" size="sm" onClick={() => startNewConversation()}>
-            <Plus className="w-4 h-4 mr-1" /> New Conversation
-          </Button>
+          <div className="flex gap-1.5">
+            <Button className="flex-1" size="sm" onClick={() => startNewConversation()}>
+              <Plus className="w-4 h-4 mr-1" /> New Chat
+            </Button>
+            <Button
+              size="sm"
+              variant={showFormPanel ? 'default' : 'outline'}
+              onClick={() => setShowFormPanel(v => !v)}
+              title="Fill an application form"
+              className="px-2.5"
+            >
+              <ClipboardList className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
-        <ScrollArea className="flex-1 p-2">
-          {loadingConvos ? (
-            <div className="flex justify-center p-4"><Loader2 className="w-4 h-4 animate-spin text-muted-foreground" /></div>
-          ) : conversations.length === 0 ? (
-            <p className="text-xs text-muted-foreground text-center p-4">No conversations yet</p>
-          ) : (
-            conversations.map(c => (
-              <button
-                key={c.id}
-                onClick={() => openConversation(c)}
-                className={cn(
-                  'w-full text-left px-3 py-2.5 rounded-lg text-sm mb-1 transition-colors flex items-center gap-2',
-                  activeConversation?.id === c.id
-                    ? 'bg-primary/10 text-primary font-medium'
-                    : 'hover:bg-muted text-foreground'
-                )}
-              >
-                <MessageSquare className="w-3.5 h-3.5 flex-shrink-0 opacity-60" />
-                <span className="truncate">{c.metadata?.name || 'Conversation'}</span>
-              </button>
-            ))
-          )}
-        </ScrollArea>
+        {showFormPanel ? (
+          <div className="flex-1 overflow-hidden flex flex-col">
+            <BenefitFormFiller
+              onFileReady={handleFormReady}
+              onClose={() => setShowFormPanel(false)}
+            />
+          </div>
+        ) : (
+          <ScrollArea className="flex-1 p-2">
+            {loadingConvos ? (
+              <div className="flex justify-center p-4"><Loader2 className="w-4 h-4 animate-spin text-muted-foreground" /></div>
+            ) : conversations.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center p-4">No conversations yet</p>
+            ) : (
+              conversations.map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => openConversation(c)}
+                  className={cn(
+                    'w-full text-left px-3 py-2.5 rounded-lg text-sm mb-1 transition-colors flex items-center gap-2',
+                    activeConversation?.id === c.id
+                      ? 'bg-primary/10 text-primary font-medium'
+                      : 'hover:bg-muted text-foreground'
+                  )}
+                >
+                  <MessageSquare className="w-3.5 h-3.5 flex-shrink-0 opacity-60" />
+                  <span className="truncate">{c.metadata?.name || 'Conversation'}</span>
+                </button>
+              ))
+            )}
+          </ScrollArea>
+        )}
 
         <div className="p-3 border-t">
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5">
