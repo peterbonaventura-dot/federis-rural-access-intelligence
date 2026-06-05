@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Globe, MapPin, Building, Users, BarChart3,
   Map, Database, FileText, HardDrive, Settings, ChevronLeft,
   ChevronRight, Shield, Wifi, Briefcase, Hospital, ShieldCheck,
-  Heart, HelpCircle, MessageSquare, User, AlertTriangle
+  Heart, HelpCircle, MessageSquare, User, AlertTriangle, Bot
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -21,6 +21,8 @@ const NAV_ITEMS = [
   { path: '/hospital-discharge-risk', label: 'Discharge Risk', icon: Hospital },
   { path: '/benefits-access', label: 'Benefits Access', icon: ShieldCheck },
   { path: '/operational-data', label: 'Operational Data', icon: Database },
+  { divider: true, label: 'Benefits Navigator' },
+  { path: '/benefits-navigator', label: 'Benefits Navigator', icon: Bot },
   { divider: true, label: 'Member Portal' },
   { path: '/member-dashboard', label: 'Member Dashboard', icon: Heart },
   { path: '/member-benefits', label: 'My Benefits', icon: Shield },
