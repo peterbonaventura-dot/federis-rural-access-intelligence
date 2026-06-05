@@ -37,6 +37,7 @@ import MemberSupport from '@/pages/MemberSupport';
 import MemberProfile from '@/pages/MemberProfile';
 import MemberCoverageGap from '@/pages/MemberCoverageGap';
 import BenefitsNavigator from '@/pages/BenefitsNavigator';
+import ARBenefitsWorkflow from '@/pages/ARBenefitsWorkflow';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -94,6 +95,7 @@ const AuthenticatedApp = () => {
           <Route path="/member-profile" element={<MemberProfile />} />
           <Route path="/member-coverage-gap" element={<MemberCoverageGap />} />
           <Route path="/benefits-navigator" element={<BenefitsNavigator />} />
+          <Route path="/ar-benefits" element={<ARBenefitsWorkflow />} />
         </Route>
       </Route>
 

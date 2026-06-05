@@ -1,0 +1,57 @@
+{
+  "name": "ARStaffTraining",
+  "type": "object",
+  "properties": {
+    "staff_user_id": {
+      "type": "string"
+    },
+    "staff_name": {
+      "type": "string"
+    },
+    "staff_email": {
+      "type": "string"
+    },
+    "access_ar_username": {
+      "type": "string",
+      "description": "Username only \u2014 no passwords stored"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "benefits_coordinator",
+        "program_director",
+        "read_only"
+      ],
+      "default": "benefits_coordinator"
+    },
+    "community_partner_certified": {
+      "type": "boolean",
+      "default": false
+    },
+    "certification_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "certification_expiry": {
+      "type": "string",
+      "format": "date"
+    },
+    "training_modules_completed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "staff_name",
+    "staff_email"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "name": "ARCaseNote",
+  "type": "object",
+  "properties": {
+    "case_id": {
+      "type": "string"
+    },
+    "note_text": {
+      "type": "string"
+    },
+    "note_type": {
+      "type": "string",
+      "enum": [
+        "general",
+        "dhs_contact",
+        "member_contact",
+        "document_action",
+        "status_change",
+        "alert",
+        "audit"
+      ],
+      "default": "general"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_id": {
+      "type": "string"
+    },
+    "old_value": {
+      "type": "string"
+    },
+    "new_value": {
+      "type": "string"
+    },
+    "field_changed": {
+      "type": "string"
+    },
+    "related_document_id": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "staff",
+        "system",
+        "dhs",
+        "member"
+      ],
+      "default": "staff"
+    }
+  },
+  "required": [
+    "case_id",
+    "note_text",
+    "note_type"
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "name": "ARBenefitsCase",
+  "type": "object",
+  "properties": {
+    "member_name": {
+      "type": "string"
+    },
+    "dob": {
+      "type": "string",
+      "format": "date"
+    },
+    "medicaid_id": {
+      "type": "string"
+    },
+    "ssn_last4": {
+      "type": "string",
+      "description": "Last 4 digits only, stored per compliance policy"
+    },
+    "address": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "guardian_name": {
+      "type": "string"
+    },
+    "guardian_relationship": {
+      "type": "string"
+    },
+    "consent_status": {
+      "type": "string",
+      "enum": [
+        "not_collected",
+        "pending",
+        "signed",
+        "expired"
+      ],
+      "default": "not_collected"
+    },
+    "consent_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "benefits_applied_for": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Medicaid",
+          "SNAP",
+          "TEA",
+          "ARKids",
+          "TEFRA",
+          "LTSS",
+          "Other"
+        ]
+      }
+    },
+    "application_type": {
+      "type": "string",
+      "enum": [
+        "new_application",
+        "renewal",
+        "change_report",
+        "document_upload",
+        "appeal"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "intake_started",
+        "consent_needed",
+        "documents_needed",
+        "ready_to_submit",
+        "submitted",
+        "pending_dhs_review",
+        "interview_scheduled",
+        "additional_docs_requested",
+        "approved",
+        "denied",
+        "appeal_needed",
+        "renewal_due",
+        "closed"
+      ],
+      "default": "intake_started"
+    },
+    "assigned_staff_id": {
+      "type": "string"
+    },
+    "assigned_staff_name": {
+      "type": "string"
+    },
+    "staff_access_ar_username": {
+      "type": "string",
+      "description": "Access Arkansas username only \u2014 no passwords stored"
+    },
+    "date_started": {
+      "type": "string",
+      "format": "date"
+    },
+    "date_submitted": {
+      "type": "string",
+      "format": "date"
+    },
+    "confirmation_number": {
+      "type": "string"
+    },
+    "dhs_case_number": {
+      "type": "string"
+    },
+    "interview_required": {
+      "type": "boolean",
+      "default": false
+    },
+    "interview_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "dhs_decision": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "denied",
+        "partial",
+        "withdrawn"
+      ],
+      "default": "pending"
+    },
+    "approval_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "denial_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "denial_reason": {
+      "type": "string"
+    },
+    "appeal_deadline": {
+      "type": "string",
+      "format": "date"
+    },
+    "renewal_due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "routine",
+        "urgent",
+        "critical"
+      ],
+      "default": "routine"
+    },
+    "county": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string",
+      "default": "AR"
+    }
+  },
+  "required": [
+    "member_name",
+    "dob",
+    "application_type"
+  ]
+}

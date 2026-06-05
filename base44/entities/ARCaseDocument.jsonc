@@ -1,0 +1,70 @@
+{
+  "name": "ARCaseDocument",
+  "type": "object",
+  "properties": {
+    "case_id": {
+      "type": "string"
+    },
+    "document_name": {
+      "type": "string"
+    },
+    "document_type": {
+      "type": "string",
+      "enum": [
+        "consent_form",
+        "proof_of_identity",
+        "proof_of_residency",
+        "proof_of_income",
+        "proof_of_disability",
+        "birth_certificate",
+        "social_security_card",
+        "insurance_card",
+        "tax_return",
+        "bank_statement",
+        "dhs_notice",
+        "confirmation_screenshot",
+        "appeal_letter",
+        "medical_record",
+        "authorized_rep_form",
+        "other"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "required",
+        "uploaded",
+        "verified",
+        "rejected",
+        "not_required"
+      ],
+      "default": "required"
+    },
+    "file_url": {
+      "type": "string"
+    },
+    "uploaded_by": {
+      "type": "string"
+    },
+    "upload_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "dhs_requested": {
+      "type": "boolean",
+      "default": false
+    },
+    "dhs_request_due_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "case_id",
+    "document_name",
+    "document_type"
+  ]
+}

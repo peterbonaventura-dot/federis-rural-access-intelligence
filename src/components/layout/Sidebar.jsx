@@ -23,6 +23,7 @@ const NAV_ITEMS = [
   { path: '/operational-data', label: 'Operational Data', icon: Database },
   { divider: true, label: 'Benefits Navigator' },
   { path: '/benefits-navigator', label: 'Benefits Navigator', icon: Bot },
+  { path: '/ar-benefits', label: 'AR Community Partner', icon: ShieldCheck },
   { divider: true, label: 'Member Portal' },
   { path: '/member-dashboard', label: 'Member Dashboard', icon: Heart },
   { path: '/member-benefits', label: 'My Benefits', icon: Shield },
