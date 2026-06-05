@@ -2,11 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import ReactMarkdown from 'react-markdown';
-import { Send, Plus, Shield, ChevronRight, Loader2, MessageSquare } from 'lucide-react';
+import { Send, Plus, Shield, ChevronRight, Loader2, MessageSquare, Paperclip, FileText, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const AGENT_NAME = 'benefits_navigator';
@@ -63,8 +62,11 @@ export default function BenefitsNavigator() {
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [loadingConvos, setLoadingConvos] = useState(true);
+  const [attachedFile, setAttachedFile] = useState(null); // { name, url }
+  const [uploadingFile, setUploadingFile] = useState(false);
   const bottomRef = useRef(null);
   const unsubscribeRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     loadConversations();
@@ -104,25 +106,49 @@ export default function BenefitsNavigator() {
     setConversations(prev => [convo, ...prev]);
     await openConversation(convo);
     if (initialMessage) {
-      await sendMessage(convo, initialMessage);
+      await sendMessage(convo, initialMessage, null);
     }
   }
 
-  async function sendMessage(convo, text) {
+  async function handleFileSelect(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.type !== 'application/pdf') {
+      alert('Please select a PDF file.');
+      return;
+    }
+    setUploadingFile(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setAttachedFile({ name: file.name, url: file_url });
+    setUploadingFile(false);
+    e.target.value = '';
+  }
+
+  async function sendMessage(convo, text, fileUrl) {
     const target = convo || activeConversation;
-    if (!target || !text.trim()) return;
+    if (!target) return;
     setSending(true);
     setInput('');
-    await base44.agents.addMessage(target, { role: 'user', content: text.trim() });
+    setAttachedFile(null);
+    const msgText = text?.trim() || (fileUrl ? 'I have attached a patient record PDF for review.' : '');
+    const msg = { role: 'user', content: msgText };
+    if (fileUrl) msg.file_urls = [fileUrl];
+    await base44.agents.addMessage(target, msg);
     setSending(false);
   }
 
   async function handleSend() {
-    if (!input.trim()) return;
+    if (!input.trim() && !attachedFile) return;
     if (!activeConversation) {
-      await startNewConversation(input.trim());
+      const convo = await base44.agents.createConversation({
+        agent_name: AGENT_NAME,
+        metadata: { name: input.trim().slice(0, 60) || attachedFile?.name || 'New conversation' },
+      });
+      setConversations(prev => [convo, ...prev]);
+      await openConversation(convo);
+      await sendMessage(convo, input.trim(), attachedFile?.url);
     } else {
-      await sendMessage(null, input.trim());
+      await sendMessage(null, input.trim(), attachedFile?.url);
     }
   }
 
@@ -245,18 +271,48 @@ export default function BenefitsNavigator() {
 
             {/* Input */}
             <div className="border-t p-4 bg-card">
-              <div className="flex gap-2 max-w-3xl mx-auto">
-                <Input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Type your question…"
-                  disabled={sending}
-                  className="rounded-xl"
-                />
-                <Button onClick={handleSend} disabled={sending || !input.trim()} size="icon" className="rounded-xl flex-shrink-0">
-                  {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                </Button>
+              <div className="max-w-3xl mx-auto space-y-2">
+                {/* Attached file preview */}
+                {attachedFile && (
+                  <div className="flex items-center gap-2 px-3 py-2 bg-primary/5 border border-primary/20 rounded-lg text-sm">
+                    <FileText className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span className="truncate text-foreground flex-1">{attachedFile.name}</span>
+                    <button onClick={() => setAttachedFile(null)} className="text-muted-foreground hover:text-destructive flex-shrink-0">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  {/* Hidden file input */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="application/pdf"
+                    className="hidden"
+                    onChange={handleFileSelect}
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-xl flex-shrink-0"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={sending || uploadingFile}
+                    title="Attach PDF"
+                  >
+                    {uploadingFile ? <Loader2 className="w-4 h-4 animate-spin" /> : <Paperclip className="w-4 h-4" />}
+                  </Button>
+                  <Input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Type your question or attach a PDF…"
+                    disabled={sending || uploadingFile}
+                    className="rounded-xl"
+                  />
+                  <Button onClick={handleSend} disabled={sending || uploadingFile || (!input.trim() && !attachedFile)} size="icon" className="rounded-xl flex-shrink-0">
+                    {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                  </Button>
+                </div>
               </div>
               <p className="text-xs text-muted-foreground text-center mt-2">
                 Applications are prepared, not filed. A human always reviews before submission.
