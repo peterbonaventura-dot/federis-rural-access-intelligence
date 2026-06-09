@@ -4,11 +4,12 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Zap, CheckCircle2, RefreshCw, Building2 } from 'lucide-react';
+import { Zap, CheckCircle2, RefreshCw, Building2, BarChart2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function AutoFacilityImportPanel() {
   const [running, setRunning] = useState(false);
+  const [buildingProfiles, setBuildingProfiles] = useState(false);
   const [lastResult, setLastResult] = useState(null);
 
   const { data: auditLogs = [] } = useQuery({
@@ -56,6 +57,19 @@ export default function AutoFacilityImportPanel() {
     }
   };
 
+  const handleBuildProfiles = async () => {
+    setBuildingProfiles(true);
+    setLastResult(null);
+    try {
+      const res = await base44.functions.invoke('buildResourceProfiles', {});
+      setLastResult({ type: 'success', message: `Built profiles for ${res.data.counties_processed} counties. Risk scores recalculating in background.` });
+    } catch (err) {
+      setLastResult({ type: 'error', message: err.message });
+    } finally {
+      setBuildingProfiles(false);
+    }
+  };
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -65,10 +79,16 @@ export default function AutoFacilityImportPanel() {
             <CardTitle className="text-base">Automatic Facility Import</CardTitle>
             <Badge className="bg-green-100 text-green-700 text-xs">Live</Badge>
           </div>
-          <Button size="sm" variant="outline" onClick={handleRunNow} disabled={running}>
-            {running ? <RefreshCw className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Zap className="w-3.5 h-3.5 mr-1" />}
-            {running ? 'Running...' : 'Run Now'}
-          </Button>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleBuildProfiles} disabled={buildingProfiles || running}>
+              {buildingProfiles ? <RefreshCw className="w-3.5 h-3.5 mr-1 animate-spin" /> : <BarChart2 className="w-3.5 h-3.5 mr-1" />}
+              {buildingProfiles ? 'Building...' : 'Build Profiles & Scores'}
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleRunNow} disabled={running || buildingProfiles}>
+              {running ? <RefreshCw className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Zap className="w-3.5 h-3.5 mr-1" />}
+              {running ? 'Running...' : 'Run Now'}
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
