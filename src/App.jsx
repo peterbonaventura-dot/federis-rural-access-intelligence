@@ -38,6 +38,7 @@ import MemberProfile from '@/pages/MemberProfile';
 import MemberCoverageGap from '@/pages/MemberCoverageGap';
 import BenefitsNavigator from '@/pages/BenefitsNavigator';
 import ARBenefitsWorkflow from '@/pages/ARBenefitsWorkflow';
+import RuralAccessExplorer from '@/pages/RuralAccessExplorer';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -96,6 +97,8 @@ const AuthenticatedApp = () => {
           <Route path="/member-coverage-gap" element={<MemberCoverageGap />} />
           <Route path="/benefits-navigator" element={<BenefitsNavigator />} />
           <Route path="/ar-benefits" element={<ARBenefitsWorkflow />} />
+          <Route path="/rural-access-explorer" element={<RuralAccessExplorer />} />
+          <Route path="/RuralAccessExplorer" element={<RuralAccessExplorer />} />
         </Route>
       </Route>
 

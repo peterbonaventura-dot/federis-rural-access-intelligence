@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Globe, MapPin, Building, Users, BarChart3,
   Map, Database, FileText, HardDrive, Settings, ChevronLeft,
   ChevronRight, Shield, Wifi, Briefcase, Hospital, ShieldCheck,
-  Heart, HelpCircle, MessageSquare, User, AlertTriangle, Bot
+  Heart, HelpCircle, MessageSquare, User, AlertTriangle, Bot, Search
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { path: '/county-profiles', label: 'County Profiles', icon: Building },
   { path: '/research-cohort', label: 'Research Cohort', icon: Users },
   { path: '/risk-rankings', label: 'Risk Rankings', icon: BarChart3 },
+  { path: '/rural-access-explorer', label: 'Access Explorer', icon: Search },
   { path: '/resource-mapping', label: 'Resource Mapping', icon: Map },
   { path: '/telehealth-access', label: 'Telehealth Access', icon: Wifi },
   { path: '/workforce-capacity', label: 'Workforce Capacity', icon: Briefcase },
