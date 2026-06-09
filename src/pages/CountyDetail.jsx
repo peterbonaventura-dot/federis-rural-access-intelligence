@@ -17,6 +17,7 @@ import {
 import { SCORE_CATEGORIES } from '@/lib/scoringEngine';
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
 import FacilityList from '@/components/county/FacilityList';
+import VeteranStatsPanel from '@/components/county/VeteranStatsPanel';
 
 export default function CountyDetail() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -225,91 +226,7 @@ export default function CountyDetail() {
         </Card>
 
         {/* Veterans */}
-        {(county.veterans_population != null || county.nearest_va_facility_miles != null) && (
-          <Card className="p-6 border-l-4 border-l-primary">
-            <div className="flex items-center gap-2 mb-5">
-              <Shield className="w-5 h-5 text-primary" />
-              <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">Veteran Population & Service-Connected Healthcare</h3>
-            </div>
-
-            {/* Population Overview */}
-            <div className="mb-5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Population Overview</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-                {[
-                  { label: 'Total Veterans', value: county.veterans_population },
-                  { label: 'Veterans Age 65+', value: county.veterans_65_plus },
-                  { label: 'Service-Connected Disability', value: county.veterans_with_disability },
-                ].map(item => (
-                  <div key={item.label} className="bg-primary/5 border border-primary/20 rounded-lg p-3">
-                    <p className="text-xs text-muted-foreground">{item.label}</p>
-                    <p className="font-bold text-lg text-foreground">{item.value != null ? item.value.toLocaleString() : '—'}</p>
-                    {item.value != null && county.population_total ? (
-                      <p className="text-xs text-primary font-medium mt-0.5">{((item.value / county.population_total) * 100).toFixed(1)}% of county pop.</p>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <Separator className="my-4" />
-
-            {/* Healthcare Access & Benefits */}
-            <div className="mb-5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Healthcare Access & Benefits</p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                {[
-                  { label: 'Enrolled in VA Healthcare', value: county.veterans_enrolled_va_healthcare, note: county.veterans_population ? `${((county.veterans_enrolled_va_healthcare / county.veterans_population) * 100).toFixed(0)}% of vets` : null },
-                  { label: 'VA Disability Recipients', value: county.veterans_va_disability_recipients, note: county.veterans_population ? `${((county.veterans_va_disability_recipients / county.veterans_population) * 100).toFixed(0)}% of vets` : null },
-                  { label: 'VA Pension Recipients', value: county.veterans_pension_recipients, note: null },
-                  { label: 'Dual-Eligible Veterans Est.', value: county.veterans_65_plus != null ? Math.round(county.veterans_65_plus * 0.45) : null, note: 'Est. Medicare + Medicaid' },
-                ].map(item => (
-                  <div key={item.label} className="bg-muted/40 rounded-lg p-3">
-                    <p className="text-xs text-muted-foreground">{item.label}</p>
-                    <p className="font-semibold text-base">{item.value != null ? item.value.toLocaleString() : '—'}</p>
-                    {item.note && item.value != null ? (
-                      <p className="text-xs text-muted-foreground mt-0.5">{item.note}</p>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <Separator className="my-4" />
-
-            {/* VA Facility Access */}
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">VA Facility Access</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-                <div className={`rounded-lg p-3 ${county.number_of_va_facilities === 0 ? 'bg-destructive/10 border border-destructive/30' : 'bg-muted/40'}`}>
-                  <p className="text-xs text-muted-foreground">VA Facilities in County</p>
-                  <p className="font-bold text-lg">{county.number_of_va_facilities ?? '—'}</p>
-                  {county.number_of_va_facilities === 0 && (
-                    <p className="text-xs text-destructive font-medium mt-0.5">No local VA access</p>
-                  )}
-                </div>
-                <div className={`rounded-lg p-3 ${county.nearest_va_facility_miles > 50 ? 'bg-amber-50 border border-amber-200' : 'bg-muted/40'}`}>
-                  <p className="text-xs text-muted-foreground">Miles to Nearest VA</p>
-                  <p className="font-bold text-lg">{county.nearest_va_facility_miles != null ? `${county.nearest_va_facility_miles} mi` : '—'}</p>
-                  {county.nearest_va_facility_miles > 50 && (
-                    <p className="text-xs text-amber-700 font-medium mt-0.5">High distance burden</p>
-                  )}
-                </div>
-                <div className="bg-muted/40 rounded-lg p-3">
-                  <p className="text-xs text-muted-foreground">Unmet VA Healthcare Need Est.</p>
-                  <p className="font-bold text-lg">
-                    {county.veterans_population != null && county.veterans_enrolled_va_healthcare != null
-                      ? Math.max(0, county.veterans_population - county.veterans_enrolled_va_healthcare).toLocaleString()
-                      : '—'}
-                  </p>
-                  {county.veterans_population != null && county.veterans_enrolled_va_healthcare != null && (
-                    <p className="text-xs text-muted-foreground mt-0.5">Veterans not enrolled in VA care</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </Card>
-        )}
+        <VeteranStatsPanel county={county} />
 
         {/* Facilities & Businesses */}
         <FacilityList countyId={countyId} countyState={county.state_abbreviation} />
