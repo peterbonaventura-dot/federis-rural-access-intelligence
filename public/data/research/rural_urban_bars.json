@@ -1,0 +1,8 @@
+{
+  "_note": "Sample fixture. Replace with output from research/viz/rural_urban_bars.csv once the DB is populated.",
+  "measures": [
+    { "label": "Workers per 1k 65+", "rural": 18.4, "metro": 27.9 },
+    { "label": "Facilities per 1k 65+", "rural": 0.42, "metro": 1.08 },
+    { "label": "Self-care difficulty per 1k 65+", "rural": 86.1, "metro": 71.3 }
+  ]
+}

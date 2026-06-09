@@ -77,6 +77,24 @@ def cmd_profile(args) -> int:
     return 0
 
 
+def cmd_viz(args) -> int:
+    from .viz import REGISTRY as VIZ
+    key = args.figure
+    if key == "all":
+        for name, fn in VIZ.items():
+            try:
+                fn()
+            except Exception as exc:  # noqa: BLE001
+                print(f"FAILED {name}: {exc}", file=sys.stderr)
+        return 0
+    if key not in VIZ:
+        print(f"unknown figure: {key}. Known: {sorted(VIZ)} or 'all'", file=sys.stderr)
+        return 2
+    path = VIZ[key]()
+    print(f"wrote {path}")
+    return 0
+
+
 def cmd_check_orphans(_args) -> int:
     failed = False
     for tbl in AREA_TABLES:
@@ -98,6 +116,7 @@ def main() -> int:
     sub.add_parser("refresh-all").set_defaults(fn=cmd_refresh_all)
     sg = sub.add_parser("geocode"); sg.add_argument("facility_source"); sg.set_defaults(fn=cmd_geocode)
     sp = sub.add_parser("profile"); sp.add_argument("county_fips"); sp.set_defaults(fn=cmd_profile)
+    sv = sub.add_parser("viz"); sv.add_argument("figure"); sv.set_defaults(fn=cmd_viz)
     sub.add_parser("check-orphans").set_defaults(fn=cmd_check_orphans)
     args = p.parse_args()
     return args.fn(args)

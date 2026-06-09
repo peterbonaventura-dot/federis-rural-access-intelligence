@@ -15,6 +15,7 @@ import ResetPassword from '@/pages/ResetPassword';
 import AppLayout from '@/components/layout/AppLayout';
 import Overview from '@/pages/Overview';
 import NationalMap from '@/pages/NationalMap';
+import RuralAccessResearch from '@/pages/RuralAccessResearch';
 import StateAnalysis from '@/pages/StateAnalysis';
 import CountyProfiles from '@/pages/CountyProfiles';
 import CountyDetail from '@/pages/CountyDetail';
@@ -73,6 +74,7 @@ const AuthenticatedApp = () => {
         <Route element={<AppLayout />}>
           <Route path="/" element={<Overview />} />
           <Route path="/national-map" element={<NationalMap />} />
+          <Route path="/rural-access-research" element={<RuralAccessResearch />} />
           <Route path="/state-analysis" element={<StateAnalysis />} />
           <Route path="/county-profiles" element={<CountyProfiles />} />
           <Route path="/county-profiles/:id" element={<CountyDetail />} />

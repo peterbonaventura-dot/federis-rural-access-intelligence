@@ -48,6 +48,12 @@ python -m research.run profile 06037
 
 # FIPS join integrity check
 python -m research.run check-orphans
+
+# Render static figures (PNG + sidecar CSV) into research/viz/output/
+python -m research.run viz workforce_choropleth
+python -m research.run viz access_deserts
+python -m research.run viz rural_urban_bars
+python -m research.run viz all
 ```
 
 A free [Census Data API key](https://api.census.gov/data/key_signup.html)
@@ -190,6 +196,33 @@ See `research/db/schema.sql`. The key tables:
 | Citations, license, RUCC rule, OEWS crosswalk, re-run docs | This README + `research/config/sources.py` |
 
 ---
+
+## Visuals
+
+### Static figures (in this repo)
+
+`research/viz/` renders three PNGs (each with a sidecar CSV of the
+underlying numbers) directly from the database:
+
+| Figure | Question it answers |
+|---|---|
+| `workforce_choropleth` | Where is the direct-care workforce thin per 65+ resident? Two-panel: all CONUS counties vs rural-only at the same scale. |
+| `access_deserts` | Where are home-care facilities sparse relative to need? Choropleth of facilities-per-1k-65+ with the geocoded facility points overlaid; rural counties hatched. |
+| `rural_urban_bars` | One paired bar per measure: rural vs metro population-weighted means, for workers / facilities / self-care difficulty per 1k 65+. |
+
+Run `python -m research.run viz all` to render every figure. Output lands
+in `research/viz/output/` (PNG + CSV per figure); commit both so the HRSA
+narrative can cite the numbers behind the visual.
+
+### Interactive page (in the base44 React app at the repo root)
+
+`src/pages/RuralAccessResearch.jsx` reads four static JSON fixtures from
+`public/data/research/` (workforce per county, rural/metro bars, facility
+points GeoJSON, source-vintage metadata) and renders a Leaflet map +
+recharts bar chart. Route: `/rural-access-research`. The fixtures are
+the documented swap-in point for a real backend — replace each `fetch`
+URL with a REST endpoint backed by the research DB and the rest of the
+page is unchanged. See `public/data/research/README.md` for shapes.
 
 ## What's intentionally **not** in this repo
 

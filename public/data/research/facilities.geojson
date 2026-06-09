@@ -1,0 +1,31 @@
+{
+  "type": "FeatureCollection",
+  "_note": "Sample fixture (~25 facility points). Replace with DB export from `facilities` (geocode_status='matched').",
+  "features": [
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Sunrise Home Health",       "county_fips": "06037", "is_rural": false }, "geometry": { "type": "Point", "coordinates": [-118.20, 34.20] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Bay Area Care",             "county_fips": "06037", "is_rural": false }, "geometry": { "type": "Point", "coordinates": [-118.45, 34.06] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Manhattan Home Services",   "county_fips": "36061", "is_rural": false }, "geometry": { "type": "Point", "coordinates": [-73.97, 40.78] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Empire Home Care",          "county_fips": "36061", "is_rural": false }, "geometry": { "type": "Point", "coordinates": [-74.00, 40.71] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Lakeview Home Health",      "county_fips": "17031", "is_rural": false }, "geometry": { "type": "Point", "coordinates": [-87.65, 41.93] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "South Side Care",           "county_fips": "17031", "is_rural": false }, "geometry": { "type": "Point", "coordinates": [-87.62, 41.78] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Houston Senior Care",       "county_fips": "48201", "is_rural": false }, "geometry": { "type": "Point", "coordinates": [-95.36, 29.76] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Phoenix Home Health",       "county_fips": "04013", "is_rural": false }, "geometry": { "type": "Point", "coordinates": [-112.07, 33.45] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Miami Coastal Care",        "county_fips": "12086", "is_rural": false }, "geometry": { "type": "Point", "coordinates": [-80.19, 25.77] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Puget Sound Home Health",   "county_fips": "53033", "is_rural": false }, "geometry": { "type": "Point", "coordinates": [-122.33, 47.61] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Boston Home Care",          "county_fips": "25025", "is_rural": false }, "geometry": { "type": "Point", "coordinates": [-71.06, 42.36] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Mile High Senior Care",     "county_fips": "08031", "is_rural": false }, "geometry": { "type": "Point", "coordinates": [-104.99, 39.74] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Music City Home Health",    "county_fips": "47037", "is_rural": false }, "geometry": { "type": "Point", "coordinates": [-86.78, 36.17] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Powell Valley Home Care",   "county_fips": "30077", "is_rural": true  }, "geometry": { "type": "Point", "coordinates": [-112.93, 46.83] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Hettinger County Care",     "county_fips": "38001", "is_rural": true  }, "geometry": { "type": "Point", "coordinates": [-102.53, 46.10] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Murdo Home Health",         "county_fips": "46075", "is_rural": true  }, "geometry": { "type": "Point", "coordinates": [-100.69, 43.97] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Sandhills Home Care",       "county_fips": "31165", "is_rural": true  }, "geometry": { "type": "Point", "coordinates": [-103.76, 42.74] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Mayfield Home Health",      "county_fips": "13321", "is_rural": true  }, "geometry": { "type": "Point", "coordinates": [-83.43, 31.97] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Lake of the Ozarks Care",   "county_fips": "29213", "is_rural": true  }, "geometry": { "type": "Point", "coordinates": [-93.05, 36.65] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Buffalo River Home Health", "county_fips": "05101", "is_rural": true  }, "geometry": { "type": "Point", "coordinates": [-93.22, 35.92] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Appalachian Senior Care",   "county_fips": "21175", "is_rural": true  }, "geometry": { "type": "Point", "coordinates": [-83.27, 37.92] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Coal Country Home Health",  "county_fips": "54043", "is_rural": true  }, "geometry": { "type": "Point", "coordinates": [-81.07, 38.46] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Blue Ridge Home Care",      "county_fips": "37087", "is_rural": true  }, "geometry": { "type": "Point", "coordinates": [-82.99, 35.55] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "High Desert Home Health",   "county_fips": "16037", "is_rural": true  }, "geometry": { "type": "Point", "coordinates": [-114.27, 44.24] } },
+    { "type": "Feature", "properties": { "source": "cms_home_health", "name": "Modoc Senior Care",         "county_fips": "06049", "is_rural": true  }, "geometry": { "type": "Point", "coordinates": [-120.73, 41.59] } }
+  ]
+}

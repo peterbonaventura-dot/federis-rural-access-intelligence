@@ -1,0 +1,10 @@
+{
+  "_note": "Sample fixture; replace with SELECT source_key, MAX(data_vintage), MAX(downloaded_at) FROM load_runs GROUP BY source_key.",
+  "sources": [
+    { "source_key": "ers_rucc",                 "data_vintage": "2023", "downloaded_at": "2026-06-01T00:00:00Z" },
+    { "source_key": "ers_ruca",                 "data_vintage": "2010", "downloaded_at": "2026-06-01T00:00:00Z" },
+    { "source_key": "bls_oews",                 "data_vintage": "2023", "downloaded_at": "2026-06-01T00:00:00Z" },
+    { "source_key": "acs_age_disability",       "data_vintage": "2022", "downloaded_at": "2026-06-01T00:00:00Z" },
+    { "source_key": "facility_cms_home_health", "data_vintage": "2024", "downloaded_at": "2026-06-01T00:00:00Z" }
+  ]
+}
