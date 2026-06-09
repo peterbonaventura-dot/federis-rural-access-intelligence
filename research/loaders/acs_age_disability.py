@@ -1,4 +1,4 @@
-"""Census ACS 5-Year: 65+ population (B01001) and self-care disability (B18101).
+"""Census ACS 5-Year: 65+ population (B01001) and self-care difficulty (B18106).
 
 Uses the Census Data API. Free key required (CENSUS_API_KEY).
 Pulls one row per US county for the configured vintage year.
@@ -29,10 +29,17 @@ AGE_65_PLUS_VARS = [
     "B01001_044E", "B01001_045E", "B01001_046E", "B01001_047E", "B01001_048E", "B01001_049E",
 ]
 
-# B18105: self-care difficulty by age and sex — `_001E` is total with self-care difficulty.
-# (B18101 in older vintages is sex-by-age-by-disability; B18105 is the direct
-# self-care difficulty table. We use B18105 because it's a single-cell pull.)
-SELF_CARE_VAR = "B18105_001E"
+# B18106: "Sex by Age by Self-Care Difficulty" — `_001E` is the universe total
+# (civilian noninstitutionalized population for the table); the self-care-with-
+# difficulty subtotals are the inner cells. We pull the total-with-difficulty
+# sum across age/sex via the table-level "self-care difficulty: Yes" lines.
+# B18106 cell layout: _001 universe, then sex × age × {with, without} difficulty.
+# The "with self-care difficulty" cells are _004, _007, _010, _013, _016, _019
+# (male age bands) and _023, _026, _029, _032, _035, _038 (female age bands).
+SELF_CARE_VARS = [
+    "B18106_004E", "B18106_007E", "B18106_010E", "B18106_013E", "B18106_016E", "B18106_019E",
+    "B18106_023E", "B18106_026E", "B18106_029E", "B18106_032E", "B18106_035E", "B18106_038E",
+]
 
 
 class AcsAgeDisabilityLoader(Loader):
@@ -43,13 +50,13 @@ class AcsAgeDisabilityLoader(Loader):
             raise RuntimeError("CENSUS_API_KEY is required for ACS loader")
 
         age_df = self._fetch(AGE_65_PLUS_VARS)
-        sc_df = self._fetch([SELF_CARE_VAR])
+        sc_df = self._fetch(SELF_CARE_VARS)
 
         age_df["pop_65_plus"] = (
             age_df[AGE_65_PLUS_VARS].apply(pd.to_numeric, errors="coerce").sum(axis=1).astype("Int64")
         )
         sc_df["pop_with_self_care_disability"] = (
-            pd.to_numeric(sc_df[SELF_CARE_VAR], errors="coerce").astype("Int64")
+            sc_df[SELF_CARE_VARS].apply(pd.to_numeric, errors="coerce").sum(axis=1).astype("Int64")
         )
 
         merged = age_df[["county_fips", "pop_65_plus"]].merge(
@@ -71,7 +78,7 @@ class AcsAgeDisabilityLoader(Loader):
         return LoadResult(
             data_vintage=str(ACS_YEAR),
             row_count=rows,
-            notes=f"B01001 65+ aggregated; B18105 self-care difficulty total",
+            notes="B01001 65+ aggregated; B18106 self-care difficulty totals (with-difficulty cells summed across age and sex)",
         )
 
     @retry(stop=stop_after_attempt(4), wait=wait_exponential(multiplier=2, min=2, max=16))

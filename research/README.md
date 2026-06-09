@@ -63,7 +63,7 @@ is required for the ACS loader. The Census batch geocoder needs no key.
 | `ers_ruca` | ZIP | Rural-Urban Commuting Area secondary code → `geo_rurality_zip.ruca_code` | decennial |
 | `ers_far` | ZIP | Frontier and Remote level (highest of FAR1..FAR4) → `geo_rurality_zip.far_level` | decennial |
 | `bls_oews` | county (via area xwalk) | Employment + mean wage for SOC 31-1121/31-1122/31-1131 → `workforce_county` | annual |
-| `acs_age_disability` | county | 65+ pop (B01001), self-care difficulty (B18105) → `population_need_county` | annual |
+| `acs_age_disability` | county | 65+ pop (B01001), self-care difficulty (B18106) → `population_need_county` | annual |
 | `hrsa_ahrf` | county | Area Health Resources File → `hrsa_ahrf_county` (full row as JSONB) | annual |
 | `facility_cms_home_health` | point | CMS Home Health Agency list → geocoded `facilities` | monthly |
 
