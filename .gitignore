@@ -29,3 +29,11 @@ dist-ssr
 
 .env
 .vite
+
+# Python research repo
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+research/data/
+!research/data/.gitkeep
