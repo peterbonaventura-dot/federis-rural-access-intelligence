@@ -229,7 +229,12 @@ export default function CountyDetail() {
         <VeteranStatsPanel county={county} />
 
         {/* Facilities & Businesses */}
-        <FacilityList countyId={countyId} countyState={county.state_abbreviation} />
+        <FacilityList
+          countyId={countyId}
+          countyState={county.state_abbreviation}
+          countyName={county.county_name}
+          stateName={county.state}
+        />
 
         {/* Operational Data */}
         {ops && (

@@ -28,18 +28,22 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'County not found' }, { status: 404 });
     }
 
-    // Only process pilot counties
-    if (county.pilot_cohort_status !== 'pilot') {
+    // If called via entity automation, only process pilot counties automatically
+    const isAutomationTrigger = !!body.event?.entity_id;
+    if (isAutomationTrigger && county.pilot_cohort_status !== 'pilot') {
       return Response.json({ skipped: true, reason: 'Not a pilot county' });
     }
 
-    // Check if facilities already exist
+    // Check if facilities already exist (skip auto-import if already populated, unless force=true)
     const existing = await base44.asServiceRole.entities.CountyFacility.filter({ county_id: countyId });
-    if (existing && existing.length > 0) {
+    const forceRefresh = body.force === true;
+    if (!forceRefresh && existing && existing.length > 0) {
       return Response.json({
         skipped: true,
-        reason: `Already has ${existing.length} facilities`,
+        added: 0,
+        message: `Already has ${existing.length} facilities — use force:true to re-import`,
         county: county.county_name,
+        existing: existing.length,
       });
     }
 
@@ -124,6 +128,7 @@ Deno.serve(async (req) => {
 
     return Response.json({
       success: true,
+      added: totalCreated,
       county: county.county_name,
       state: county.state_abbreviation,
       total_created: totalCreated,
