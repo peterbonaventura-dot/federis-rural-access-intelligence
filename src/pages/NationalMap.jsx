@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import { getRiskColor, getRiskLevel } from '@/lib/scoringEngine';
 import { Input } from '@/components/ui/input';
-import { Search, Layers, Shield, AlertTriangle } from 'lucide-react';
+import { Search, Layers, Shield, AlertTriangle, Building } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 
 const CLUSTER_TYPES = new Set(['hospital', 'critical_access_hospital', 'rural_health_clinic', 'fqhc']);
@@ -88,6 +88,7 @@ export default function NationalMap() {
   const [clusterMode, setClusterMode] = useState(false);
   const [showVeteranLayer, setShowVeteranLayer] = useState(true);
   const [showCoverageGaps, setShowCoverageGaps] = useState(true);
+  const [showSocialServicesLayer, setShowSocialServicesLayer] = useState(true);
 
   const { data: counties = [] } = useQuery({
     queryKey: ['counties'],
@@ -271,6 +272,13 @@ export default function NationalMap() {
             <AlertTriangle className="w-3.5 h-3.5" />
             Coverage Gaps
           </button>
+          <button
+            onClick={() => setShowSocialServicesLayer(v => !v)}
+            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded border font-medium transition-colors ${showSocialServicesLayer ? 'bg-slate-700 text-white border-slate-700' : 'bg-background text-muted-foreground border-border'}`}
+          >
+            <Building className="w-3.5 h-3.5" />
+            Social Services
+          </button>
         </div>
 
         {/* Notice: facilities using county-center coords */}
@@ -311,13 +319,74 @@ export default function NationalMap() {
                       weight={1.5}
                       color="#fff"
                     >
-                      <Popup>
-                        <div className="text-sm">
-                          <p className="font-bold">{county.county_name}, {county.state_abbreviation}</p>
-                          <p>Risk Score: <strong>{riskScore}</strong></p>
-                          <p>Population: {county.population_total?.toLocaleString()}</p>
-                          {score?.care_desert_flag && <p className="text-red-600 font-semibold">⚠ Care Desert</p>}
-                          <Link to={`/county-profiles/${county.id}`} className="text-blue-600 underline text-xs">View Profile →</Link>
+                      <Popup minWidth={280}>
+                        <div className="text-sm space-y-2">
+                          <div>
+                            <p className="font-bold text-base">{county.county_name}, {county.state_abbreviation}</p>
+                            <p className="text-xs text-gray-500">FIPS {county.fips_code}</p>
+                          </div>
+
+                          {/* Risk flags */}
+                          <div className="flex flex-wrap gap-1">
+                            {score?.care_desert_flag && <span className="text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-semibold">⚠ Care Desert</span>}
+                            {score?.benefits_access_desert_flag && <span className="text-xs bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded font-semibold">Benefits Desert</span>}
+                            {score?.workforce_crisis_flag && <span className="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-semibold">Workforce Crisis</span>}
+                            {score?.hospital_discharge_risk_flag && <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-semibold">Discharge Risk</span>}
+                          </div>
+
+                          {/* Overall score */}
+                          <div className="flex items-center justify-between bg-gray-50 rounded px-2 py-1">
+                            <span className="text-xs font-semibold text-gray-600">Overall Risk Score</span>
+                            <span className="font-bold text-base" style={{ color: getRiskColor(riskScore) }}>{riskScore || '—'}</span>
+                          </div>
+
+                          {/* Score breakdown */}
+                          {score && (
+                            <div>
+                              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Score Breakdown</p>
+                              <div className="space-y-0.5">
+                                {[
+                                  { label: 'Workforce Shortage', key: 'workforce_shortage_score', weight: '20%' },
+                                  { label: 'Provider Capacity', key: 'provider_capacity_score', weight: '15%' },
+                                  { label: 'Transportation Burden', key: 'transportation_burden_score', weight: '15%' },
+                                  { label: 'Hospital Discharge', key: 'hospital_discharge_risk_score', weight: '10%' },
+                                  { label: 'Benefits Access', key: 'benefits_access_score', weight: '10%' },
+                                  { label: 'Behavioral Health', key: 'behavioral_health_access_score', weight: '10%' },
+                                  { label: 'Pharmacy Access', key: 'pharmacy_access_score', weight: '5%' },
+                                  { label: 'Service Continuity', key: 'service_continuity_score', weight: '10%' },
+                                  { label: 'EVV/Documentation', key: 'evv_documentation_burden_score', weight: '5%' },
+                                ].map(({ label, key, weight }) => {
+                                  const val = score[key];
+                                  if (val == null) return null;
+                                  const barColor = val >= 75 ? '#dc2626' : val >= 50 ? '#d97706' : '#16a34a';
+                                  return (
+                                    <div key={key} className="flex items-center gap-1.5">
+                                      <span className="text-xs text-gray-500 w-36 shrink-0">{label}</span>
+                                      <div className="flex-1 bg-gray-200 rounded-full h-1.5">
+                                        <div className="h-1.5 rounded-full" style={{ width: `${val}%`, backgroundColor: barColor }} />
+                                      </div>
+                                      <span className="text-xs font-semibold w-6 text-right">{val}</span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Demographics */}
+                          <div>
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Demographics</p>
+                            <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
+                              <div><span className="text-gray-500">Population: </span><span className="font-medium">{county.population_total?.toLocaleString() || '—'}</span></div>
+                              <div><span className="text-gray-500">Age 65+: </span><span className="font-medium">{county.population_65_plus?.toLocaleString() || '—'}</span></div>
+                              <div><span className="text-gray-500">Disabled Est.: </span><span className="font-medium">{county.population_disabled_estimate?.toLocaleString() || '—'}</span></div>
+                              <div><span className="text-gray-500">Poverty: </span><span className="font-medium">{county.poverty_rate != null ? `${county.poverty_rate}%` : '—'}</span></div>
+                              <div><span className="text-gray-500">Unemployment: </span><span className="font-medium">{county.unemployment_rate != null ? `${county.unemployment_rate}%` : '—'}</span></div>
+                              <div><span className="text-gray-500">Median Income: </span><span className="font-medium">{county.median_income != null ? `$${county.median_income.toLocaleString()}` : '—'}</span></div>
+                            </div>
+                          </div>
+
+                          <Link to={`/county-profiles/${county.id}`} className="text-blue-600 underline text-xs block pt-1 border-t border-gray-200">View Full Profile →</Link>
                         </div>
                       </Popup>
                     </CircleMarker>
@@ -416,6 +485,47 @@ export default function NationalMap() {
                     </CircleMarker>
                   );
                 })}
+
+                {/* Social Services dedicated layer */}
+                {showSocialServicesLayer && facilitiesWithCoords
+                  .filter(f => ['social_security_office', 'area_agency_on_aging', 'community_org'].includes(f.facility_type))
+                  .map(f => {
+                    const county = countyMap[f.county_id];
+                    const address = [f.address_street, f.address_city, f.address_state, f.address_zip].filter(Boolean).join(', ');
+                    const typeIcon = f.facility_type === 'social_security_office' ? '🏛' : f.facility_type === 'area_agency_on_aging' ? '👴' : '🤝';
+                    const typeLabel = FACILITY_LABELS[f.facility_type] || f.facility_type;
+                    return (
+                      <CircleMarker
+                        key={`ss-${f.id}`}
+                        center={[f.latitude, f.longitude]}
+                        radius={8}
+                        fillColor={FACILITY_COLORS[f.facility_type]}
+                        fillOpacity={0.9}
+                        stroke={true}
+                        weight={2}
+                        color="#fff"
+                      >
+                        <Popup>
+                          <div className="text-sm space-y-0.5">
+                            <p className="font-bold">{typeIcon} {f.facility_name}</p>
+                            <p className="text-xs font-medium" style={{ color: FACILITY_COLORS[f.facility_type] }}>{typeLabel}</p>
+                            {address && <p className="text-xs text-gray-600">{address}</p>}
+                            {f.phone && <p className="text-xs text-gray-600">📞 {f.phone}</p>}
+                            {county && (
+                              <Link to={`/county-profiles/${county.id}`} className="text-blue-600 underline text-xs block mt-1">
+                                {county.county_name}, {county.state_abbreviation} →
+                              </Link>
+                            )}
+                            {f._usedCountyCoords && <p className="text-xs text-amber-600 italic">📍 Plotted at county center</p>}
+                            <div className="flex gap-1 mt-1 flex-wrap">
+                              {f.accepts_medicaid && <span className="text-xs bg-green-100 text-green-700 px-1 rounded">Medicaid</span>}
+                              {f.accepts_medicare && <span className="text-xs bg-blue-100 text-blue-700 px-1 rounded">Medicare</span>}
+                            </div>
+                          </div>
+                        </Popup>
+                      </CircleMarker>
+                    );
+                  })}
 
                 {/* Individual facility markers */}
                 {showFacilities && !clusterMode && filteredFacilities.map(f => {
@@ -582,6 +692,33 @@ export default function NationalMap() {
                     <span className="font-medium">{filtered.reduce((s, c) => s + (c.veterans_population || 0), 0).toLocaleString()}</span>
                   </div>
                 </div>
+              </Card>
+            )}
+
+            {showSocialServicesLayer && (
+              <Card className="p-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
+                  <Building className="w-3.5 h-3.5 text-slate-600" /> Social Services
+                </h3>
+                <div className="space-y-1.5">
+                  {[
+                    { label: 'Social Security Office', type: 'social_security_office' },
+                    { label: 'Area Agency on Aging', type: 'area_agency_on_aging' },
+                    { label: 'Community Org', type: 'community_org' },
+                  ].map(({ label, type }) => {
+                    const count = facilitiesWithCoords.filter(f => f.facility_type === type).length;
+                    return (
+                      <div key={type} className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: FACILITY_COLORS[type] }} />
+                          <span>{label}</span>
+                        </div>
+                        <span className="font-medium">{count}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2 pt-2 border-t">Larger circles. Always visible independent of Facilities toggle.</p>
               </Card>
             )}
 
