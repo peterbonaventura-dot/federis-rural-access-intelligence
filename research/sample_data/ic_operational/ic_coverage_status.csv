@@ -1,0 +1,44 @@
+office_id,office_name,county_fips,state,county,rucc_code,metro_status,bucket,risk_overall,risk_workforce,risk_provider,risk_transport,risk_discharge,risk_benefits,risk_behavioral,risk_pharmacy,risk_continuity,risk_evv,care_desert,benefits_desert
+5632,Independence Care of Philadelphia,42101,PA,Philadelphia,1,metro,active,,,,,,,,,,,,
+6837,Independence Care of Pittsburgh,42003,PA,Allegheny (Pittsburgh),1,metro,active,,,,,,,,,,,,
+6835,Independence Care of Scranton,42069,PA,Lackawanna (Scranton),2,metro,active,,,,,,,,,,,,
+6836,Independence Care of Pennsylvania,42077,PA,Lehigh (Allentown),2,metro,active,,,,,,,,,,,,
+6836,Independence Care of Pennsylvania,42079,PA,Luzerne (Wilkes-Barre),2,metro,active,,,,,,,,,,,,
+6895,Independence Care of Erie,42049,PA,Erie,3,metro,active,,,,,,,,,,,,
+6836,Independence Care of Pennsylvania,42053,PA,Forest,8,nonmetro,active,92,96,95,98,73,75,96,79,100,100,true,true
+6836,Independence Care of Pennsylvania,42059,PA,Greene,7,nonmetro,active,90,96,93,88,77,74,99,68,99,100,true,true
+6836,Independence Care of Pennsylvania,42123,PA,Warren,7,nonmetro,active,83,93,93,79,67,66,87,62,96,82,true,false
+6836,Independence Care of Pennsylvania,42031,PA,Clarion,7,nonmetro,active,83,96,93,72,69,64,85,59,97,98,true,false
+6836,Independence Care of Pennsylvania,42025,PA,Carbon,6,nonmetro,active,81,95,93,70,65,62,85,57,96,74,true,false
+6836,Independence Care of Pennsylvania,42121,PA,Venango,7,nonmetro,active,78,90,93,66,59,58,83,57,95,78,true,false
+6836,Independence Care of Pennsylvania,42051,PA,Fayette,7,nonmetro,active,75,92,94,56,62,56,73,53,91,57,true,false
+6836,Independence Care of Pennsylvania,42107,PA,Schuylkill,6,nonmetro,active,70,90,93,49,55,58,64,50,84,38,true,false
+9871,Independence Care of Florida,12086,FL,Miami-Dade,1,metro,active,,,,,,,,,,,,
+9871,Independence Care of Florida,12021,FL,Collier (Naples),2,metro,active,,,,,,,,,,,,
+9871,Independence Care of Florida,12043,FL,Glades,8,nonmetro,active,94,100,95,100,75,75,99,87,100,100,true,true
+9871,Independence Care of Florida,12029,FL,Dixie,7,nonmetro,active,94,100,95,100,75,75,99,88,100,100,true,true
+9871,Independence Care of Florida,12047,FL,Hamilton,7,nonmetro,active,94,100,95,100,75,75,99,87,100,100,true,true
+9871,Independence Care of Florida,12051,FL,Hendry,7,nonmetro,active,90,97,93,88,77,75,99,67,98,100,true,true
+9871,Independence Care of Florida,12027,FL,DeSoto,4,nonmetro,active,87,96,93,82,72,72,97,62,97,100,true,true
+7269,Independence Care of Chicago,17031,IL,Cook (Chicago),1,metro,active,,,,,,,,,,,,
+16690,Independence Care of Michigan,26163,MI,Wayne (Detroit),1,metro,active,,,,,,,,,,,,
+16690,Independence Care of Michigan,26125,MI,Oakland,1,metro,active,,,,,,,,,,,,
+16690,Independence Care of Michigan,26099,MI,Macomb,1,metro,active,,,,,,,,,,,,
+16690,Independence Care of Michigan,26103,MI,Marquette (UP),4,nonmetro,active,,,,,,,,,,,,
+16690,Independence Care of Michigan,26061,MI,Houghton (UP),6,nonmetro,active,,,,,,,,,,,,
+16690,Independence Care of Michigan,26085,MI,Lake (UP),8,nonmetro,active,94,100,95,100,75,75,99,87,100,100,true,true
+16690,Independence Care of Michigan,26033,MI,Chippewa (UP),6,nonmetro,active,,,,,,,,,,,,
+16690,Independence Care of Michigan,26041,MI,Delta (UP),6,nonmetro,active,,,,,,,,,,,,
+6955,Independence Care of New Hampshire,33011,NH,Hillsborough (Manchester),2,metro,active,,,,,,,,,,,,
+6955,Independence Care of New Hampshire,33007,NH,Coös,6,nonmetro,active,91,98,93,94,81,73,91,71,99,100,true,true
+6955,Independence Care of New Hampshire,33019,NH,Sullivan,5,nonmetro,active,76,93,93,63,59,57,80,54,93,50,true,false
+6955,Independence Care of New Hampshire,33003,NH,Carroll,6,nonmetro,active,72,89,93,56,54,57,72,51,87,46,true,false
+6955,Independence Care of New Hampshire,33009,NH,Grafton,5,nonmetro,active,49,50,50,50,50,50,50,50,50,30,false,false
+16521,Independence Care of Kentucky,21111,KY,Jefferson (Louisville),1,metro,active,,,,,,,,,,,,
+16521,Independence Care of Kentucky,21067,KY,Fayette (Lexington),2,metro,active,,,,,,,,,,,,
+16521,Independence Care of Kentucky,21013,KY,Bell,7,nonmetro,active,,,,,,,,,,,,
+16521,Independence Care of Kentucky,21237,KY,Wolfe,9,nonmetro,active,,,,,,,,,,,,
+14519,Independence Care of Arkansas,05119,AR,Pulaski (Little Rock),3,metro,active,,,,,,,,,,,,
+14519,Independence Care of Arkansas,05103,AR,Ouachita,7,nonmetro,active,92,98,92,93,88,75,99,72,100,100,true,true
+17133,Independence Care of Arizona,04013,AZ,Maricopa (Phoenix),1,metro,active,,,,,,,,,,,,
+17312,Independence Care of Idaho,16001,ID,Ada (Boise),1,metro,active,,,,,,,,,,,,
