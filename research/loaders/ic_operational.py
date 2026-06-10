@@ -11,17 +11,25 @@ research/db/schema.sql. Raw operational records never touch disk and are
 never persisted; they are held only in memory inside this loader's run.
 
 Required environment:
-  BASE44_API_URL    e.g. https://app.base44.com or your tenant URL
-  BASE44_API_TOKEN  service-account token with read access to:
+  BASE44_APP_ID     Your Base44 app ID (e.g. 697e9e64e77fa584081cc486).
+  BASE44_API_KEY    Service-account api_key with read access to:
                       HHAXPatient, HHAXVisit, HHAXAuthorization,
-                      HHAXCaregiver, Applicant, ResearchConsent
-  CENSUS_API_KEY    used for ACS loader (not needed here, but the geocoder
-                    helper falls back to no-key Census batch endpoint)
+                      HHAXCaregiver, Applicant, ResearchConsent.
+                    Generate this in the Base44 console; recommend a
+                    read-only token scoped to those six entities.
 
-Optional:
-  BASE44_ENTITY_PATH_TEMPLATE  override REST path template, default
-                                "/api/entities/{entity}". Some tenants use
-                                "/entities/{entity}" — adjust if 404s.
+Optional environment:
+  BASE44_API_URL                 Base URL — defaults to https://app.base44.com.
+                                  Override if your tenant uses a custom domain.
+  BASE44_ENTITY_PATH_TEMPLATE    REST path template, default
+                                  "/api/apps/{app_id}/entities/{entity}".
+                                  Adjust if a tenant returns 404s.
+  IC_OPERATIONAL_FROM_YEAR       Default 2022.
+  IC_OPERATIONAL_TO_YEAR         Default current year.
+
+Auth follows the @base44/sdk JS client convention:
+    headers = { "api_key": BASE44_API_KEY }
+    appId appears in the URL path.
 
 See codebook v1.1 §1, §7, and §4.10–4.13 for the architectural posture and
 column dictionary.
@@ -43,10 +51,12 @@ from .base import Loader, LoadResult
 
 log = logging.getLogger("loader.ic_operational")
 
-BASE44_API_URL = os.environ.get("BASE44_API_URL", "").rstrip("/")
-BASE44_API_TOKEN = os.environ.get("BASE44_API_TOKEN", "")
+BASE44_API_URL = os.environ.get("BASE44_API_URL", "https://app.base44.com").rstrip("/")
+BASE44_APP_ID = os.environ.get("BASE44_APP_ID", "")
+BASE44_API_KEY = os.environ.get("BASE44_API_KEY", "")
 ENTITY_PATH_TEMPLATE = os.environ.get(
-    "BASE44_ENTITY_PATH_TEMPLATE", "/api/entities/{entity}"
+    "BASE44_ENTITY_PATH_TEMPLATE",
+    "/api/apps/{app_id}/entities/{entity}",
 )
 PAGE_SIZE = 1000
 MAX_PAGES = 2000  # 2M records ceiling per entity per run
@@ -79,29 +89,39 @@ CENSUS_GEOCODER_URL = (
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Base44 REST client (minimal — list-entity-with-pagination only)
+# Base44 REST client (list-entity-with-pagination only)
 # ──────────────────────────────────────────────────────────────────────────────
 
 @retry(stop=stop_after_attempt(4), wait=wait_exponential(multiplier=2, min=2, max=16))
 def _fetch_entity_page(entity: str, page: int) -> list[dict]:
-    if not BASE44_API_URL or not BASE44_API_TOKEN:
+    if not BASE44_APP_ID or not BASE44_API_KEY:
         raise RuntimeError(
-            "BASE44_API_URL and BASE44_API_TOKEN env vars are required for the "
+            "BASE44_APP_ID and BASE44_API_KEY env vars are required for the "
             "ic_operational loader. Set them in your shell or .env."
         )
-    path = ENTITY_PATH_TEMPLATE.format(entity=entity)
+    path = ENTITY_PATH_TEMPLATE.format(app_id=BASE44_APP_ID, entity=entity)
     url = f"{BASE44_API_URL}{path}"
     headers = {
-        "Authorization": f"Bearer {BASE44_API_TOKEN}",
+        "api_key": BASE44_API_KEY,
         "Accept": "application/json",
     }
-    # Try the SDK convention first (_page / _page_size); if the API uses
-    # plain page/page_size, both will be accepted by most Base44 tenants.
+    # Try the SDK convention (_page / _page_size); plain page/page_size also
+    # accepted by most Base44 tenants.
     params = {
         "_page": page, "_page_size": PAGE_SIZE,
         "page": page, "page_size": PAGE_SIZE,
     }
     resp = requests.get(url, headers=headers, params=params, timeout=REQUEST_TIMEOUT)
+    if resp.status_code == 401:
+        raise RuntimeError(
+            "Base44 returned 401 Unauthorized. Verify BASE44_API_KEY is valid "
+            "and the service account has read access to the requested entity."
+        )
+    if resp.status_code == 404 and entity != "":
+        raise RuntimeError(
+            f"Base44 returned 404 for {url}. The path template may be wrong "
+            f"for your tenant — try setting BASE44_ENTITY_PATH_TEMPLATE."
+        )
     resp.raise_for_status()
     payload = resp.json()
     # Tenants return either a bare list or {items: [...]} / {data: [...]}.
