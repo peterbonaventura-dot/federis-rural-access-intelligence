@@ -1,4 +1,4 @@
-"""Source registry: every public dataset this repo ingests.
+"""Source registry: every dataset this repo ingests.
 
 Each entry seeds the `source_registry` table on startup so analysts can cite
 provenance directly out of SQL. URLs are pinned to landing pages, not deep
@@ -47,7 +47,7 @@ SOURCES = [
         "source_key": "acs_age_disability",
         "display_name": "Census ACS 5-Year: Age and Self-Care Disability",
         "source_url": "https://www.census.gov/data/developers/data-sets/acs-5year.html",
-        "citation": "U.S. Census Bureau. American Community Survey 5-Year Estimates (Tables B01001, B18101).",
+        "citation": "U.S. Census Bureau. American Community Survey 5-Year Estimates (Tables B01001, B18106).",
         "license_note": "Public domain (U.S. Government work). API terms: api.census.gov.",
         "geography_level": "county",
         "update_cadence": "annual",
@@ -69,5 +69,14 @@ SOURCES = [
         "license_note": "Public domain (U.S. Government work).",
         "geography_level": "point",
         "update_cadence": "monthly",
+    },
+    {
+        "source_key": "ic_operational",
+        "display_name": "Independence Care operational aggregates (HHAX + ApplicantStack)",
+        "source_url": "internal://base44/entities",
+        "citation": "Independence Care operational records, aggregated to county level under consent + HIPAA Safe Harbor §164.514(b)(2) + n>=11 suppression. Not a public dataset.",
+        "license_note": "Restricted use; internal research only. Aggregated/de-identified, non-PHI under §164.514(b).",
+        "geography_level": "county",
+        "update_cadence": "on-demand (re-run as consent universe expands)",
     },
 ]

@@ -8,6 +8,11 @@ Usage:
   python -m research.run profile <county_fips>  # Study-1 acceptance query
 
 All loaders are idempotent: a second run upserts and does not duplicate.
+
+The ic_operational loader is NOT part of refresh-all by default — it
+requires BASE44_API_URL + BASE44_API_TOKEN and pulls non-public data. Run
+it explicitly:
+  python -m research.run load ic_operational
 """
 
 from __future__ import annotations
@@ -39,6 +44,8 @@ def cmd_refresh_all(_args) -> int:
     init_schema()
     failures: list[str] = []
     # Order matters: rurality lookups first, then area facts, then facilities.
+    # ic_operational is intentionally excluded — it requires private
+    # credentials and is run on-demand. Use `load ic_operational` instead.
     order = [
         "ers_rucc", "ers_ruca", "ers_far",
         "acs_age_disability", "bls_oews", "hrsa_ahrf",

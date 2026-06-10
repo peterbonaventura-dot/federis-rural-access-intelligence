@@ -1,5 +1,5 @@
 from .base import Loader, LoadResult
-from . import ers_rucc, ers_ruca, ers_far, bls_oews, acs_age_disability, hrsa_ahrf, facility
+from . import ers_rucc, ers_ruca, ers_far, bls_oews, acs_age_disability, hrsa_ahrf, facility, ic_operational
 
 
 REGISTRY: dict[str, Loader] = {
@@ -10,6 +10,7 @@ REGISTRY: dict[str, Loader] = {
     "acs_age_disability": acs_age_disability.AcsAgeDisabilityLoader(),
     "hrsa_ahrf": hrsa_ahrf.HrsaAhrfLoader(),
     "facility_cms_home_health": facility.CmsHomeHealthLoader(),
+    "ic_operational": ic_operational.ICOperationalLoader(),
 }
 
 __all__ = ["Loader", "LoadResult", "REGISTRY"]
