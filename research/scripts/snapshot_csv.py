@@ -9,8 +9,13 @@ Usage:
 
 Defaults to research/snapshots/<UTC-timestamp>/.
 
-All sources are public, non-PHI U.S. Government datasets; no suppression
-required. The facilities table writes geom as WKT for portability.
+Public tables hold non-PHI U.S. Government datasets; no suppression
+required. IC operational tables (ic_*) hold county-level aggregates that
+are already consent-gated, HIPAA Safe Harbor-stripped, and n>=11 suppressed
+by the loader before persistence — they are also non-PHI but flagged in
+the manifest so Ahmad sees the compliance posture.
+
+The facilities table writes geom as WKT for portability.
 """
 
 from __future__ import annotations
@@ -29,7 +34,8 @@ from ..db.connection import get_engine
 
 log = logging.getLogger("snapshot")
 
-# Order matters only for readability — lookups first, facts after, point data last.
+# Order matters only for readability — lookups first, facts after, point data,
+# then IC operational aggregates last.
 TABLES = [
     "source_registry",
     "load_runs",
@@ -40,7 +46,18 @@ TABLES = [
     "population_need_county",
     "hrsa_ahrf_county",
     "facilities",
+    "ic_caregivers_county",
+    "ic_visits_county_year",
+    "ic_auths_county_year",
+    "ic_applicant_funnel_county_year",
 ]
+
+IC_TABLES = {
+    "ic_caregivers_county",
+    "ic_visits_county_year",
+    "ic_auths_county_year",
+    "ic_applicant_funnel_county_year",
+}
 
 # facilities.geom is PostGIS — export as WKT for portability.
 GEOM_TABLES = {"facilities": "geom"}
@@ -49,9 +66,6 @@ GEOM_TABLES = {"facilities": "geom"}
 def export_table(engine, table: str, out_path: pathlib.Path) -> int:
     if table in GEOM_TABLES:
         geom_col = GEOM_TABLES[table]
-        sql = text(
-            f"SELECT * EXCEPT, ST_AsText({geom_col}) AS {geom_col}_wkt FROM {table}"
-        )
         # Postgres has no SELECT * EXCEPT; expand columns instead.
         with engine.connect() as conn:
             cols = [
@@ -72,6 +86,18 @@ def export_table(engine, table: str, out_path: pathlib.Path) -> int:
         sql = text(f"SELECT * FROM {table}")
 
     df = pd.read_sql(sql, engine)
+
+    # For IC tables, render suppressed rows as "<11" strings so a human
+    # reading the CSV sees the suppression marker — same convention as the
+    # in-app export. The DB stores NULL with suppressed=true; here we
+    # surface the marker.
+    if table in IC_TABLES and not df.empty and "suppressed" in df.columns:
+        metric_cols = [c for c in df.columns
+                       if c not in {"county_fips", "data_year", "suppressed", "loaded_at"}]
+        mask = df["suppressed"] == True  # noqa: E712
+        for c in metric_cols:
+            df.loc[mask, c] = "<11"
+
     df.to_csv(out_path, index=False, quoting=csv.QUOTE_MINIMAL)
     return len(df)
 
@@ -89,15 +115,20 @@ def write_manifest(engine, out_dir: pathlib.Path, counts: dict[str, int]) -> Non
     manifest = out_dir / "MANIFEST.txt"
     with manifest.open("w") as f:
         f.write("Rural Health Research Data Repository — CSV snapshot\n")
-        f.write(f"Generated (UTC): {dt.datetime.utcnow().isoformat(timespec='seconds')}Z\n")
-        f.write("Source: public, non-PHI U.S. Government datasets.\n\n")
+        f.write(f"Generated (UTC): {dt.datetime.utcnow().isoformat(timespec='seconds')}Z\n\n")
+        f.write("Public tables: non-PHI U.S. Government datasets.\n")
+        f.write("IC operational tables (ic_*): county-level aggregates,\n")
+        f.write("  consent-gated, HIPAA Safe Harbor §164.514(b)(2)-stripped,\n")
+        f.write("  n>=11 small-cell suppression with complementary suppression\n")
+        f.write("  per state. Suppressed rows show <11 in this CSV.\n\n")
         f.write("Tables (rows exported):\n")
         for t in TABLES:
-            f.write(f"  {t:32s} {counts.get(t, 0):>10,}\n")
+            tag = " [IC operational]" if t in IC_TABLES else ""
+            f.write(f"  {t:36s} {counts.get(t, 0):>10,}{tag}\n")
         f.write("\nLast successful load per source:\n")
         for row in latest:
             f.write(
-                f"  {row['source_key']:24s} vintage={row['data_vintage']}  "
+                f"  {row['source_key']:28s} vintage={row['data_vintage']}  "
                 f"loaded_at={row['last_loaded']}\n"
             )
         f.write(
@@ -134,9 +165,9 @@ def main(argv: list[str] | None = None) -> int:
         try:
             n = export_table(engine, table, out_path)
             counts[table] = n
-            log.info("  %-32s %10d rows  → %s", table, n, out_path.name)
+            log.info("  %-36s %10d rows  → %s", table, n, out_path.name)
         except Exception as exc:  # noqa: BLE001 — log and continue per-table
-            log.error("  %-32s FAILED: %s", table, exc)
+            log.error("  %-36s FAILED: %s", table, exc)
             counts[table] = -1
 
     write_manifest(engine, args.out_dir, counts)
